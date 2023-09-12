@@ -1,10 +1,13 @@
 {
-  "name": "git-jira",
+  "name": "ya-git-jira",
   "module": "index.ts",
   "type": "module",
   "bin": {
-    "git-jira-start": "bin/start.ts",
-    "git-bump": "bin/bump.ts"
+    "git-jira-start": "dist/start.js",
+    "git-bump": "dist/bump.js"
+  },
+  "scripts": {
+    "preinstall": "bun build bin/start.ts bin/bump.ts --outdir dist"
   },
   "devDependencies": {
     "bun-types": "latest"
