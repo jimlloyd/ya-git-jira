@@ -1,13 +1,13 @@
 {
   "name": "ya-git-jira",
-  "module": "index.ts",
+  "module": "dist/index.js",
   "type": "module",
   "bin": {
-    "git-jira-start": "dist/start.js",
-    "git-bump": "dist/bump.js"
+    "git-jira-start": "dist/bin/start.js",
+    "git-bump": "dist/bin/bump.js"
   },
   "scripts": {
-    "preinstall": "bun build bin/start.ts bin/bump.ts --outdir dist"
+    "preinstall": "bun build index.ts bin/start.ts bin/bump.ts --outdir dist"
   },
   "devDependencies": {
     "bun-types": "latest"
@@ -20,5 +20,23 @@
   },
   "dependencies": {
     "minimist": "^1.2.8"
-  }
+  },
+  "description": "git extensions for Jira integration. Assumes bun is installed.",
+  "version": "0.0.1",
+  "main": "dist/start.js dist/bump.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jimlloyd/ya-git-jira.git"
+  },
+  "keywords": [
+    "git",
+    "jira",
+    "integration"
+  ],
+  "author": "jim.lloyd@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jimlloyd/ya-git-jira/issues"
+  },
+  "homepage": "https://github.com/jimlloyd/ya-git-jira#readme"
 }
