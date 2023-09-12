@@ -1,11 +1,16 @@
 
 
-
+export async function doCommand(args: string[]): Promise<string> {
+    const proc = Bun.spawn(args)
+    const stdout = new Response(proc.stdout)
+    const stderr = new Response(proc.stderr)
+    const [out, err] = await Promise.all([stdout.text(), stderr.text()])
+    if (err) console.error(err)
+    return out.trim()
+}
 
 export async function getConfig(key: string): Promise<string> {
-    const proc = Bun.spawn(["git", "config", "--get", key])
-    const text = await new Response(proc.stdout).text()
-    return text.trim()
+    return doCommand(["git", "config", "--get", key])
 }
 
 export interface JiraConfig {
@@ -19,4 +24,12 @@ export async function getJiraConfig(): Promise<JiraConfig> {
     const pat = await getConfig("jira.pat")
     const token = Buffer.from(`${user}:${pat}`).toString('base64')
     return { host, token }
+}
+
+export async function createBranch(name: string): Promise<string> {
+    return doCommand(["git", "checkout", "-b", name])
+}
+
+export async function getCurrentBranch(): Promise<string> {
+    return doCommand(["git", "rev-parse", "--abbrev-ref", "HEAD"])
 }
