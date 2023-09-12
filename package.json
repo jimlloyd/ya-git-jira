@@ -2,8 +2,15 @@
   "name": "git-jira",
   "module": "index.ts",
   "type": "module",
+  "bin": {
+    "git-jira-start": "bin/start.ts",
+    "git-bump": "bin/bump.ts"
+  },
   "devDependencies": {
     "bun-types": "latest"
+  },
+  "directories": {
+    "lib": "lib"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
