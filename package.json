@@ -1,5 +1,7 @@
 {
   "name": "ya-git-jira",
+  "description": "git extensions for Jira integration. Assumes bun is installed.",
+  "version": "1.0.0",
   "module": "dist/index.js",
   "type": "module",
   "bin": {
@@ -21,8 +23,6 @@
   "dependencies": {
     "minimist": "^1.2.8"
   },
-  "description": "git extensions for Jira integration. Assumes bun is installed.",
-  "version": "0.0.1",
   "main": "dist/start.js dist/bump.js",
   "repository": {
     "type": "git",
