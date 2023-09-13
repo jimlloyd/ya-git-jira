@@ -5,13 +5,16 @@
   "module": "dist/index.js",
   "type": "module",
   "bin": {
-    "git-jira-start": "dist/bin/start.js",
-    "git-bump": "dist/bin/bump.js"
+    "gitj" : "dist/bin/gitj.js",
+    "git-jira" : "dist/bin/git-jira.js",
+    "git-jira-start": "dist/bin/git-jira-start.js",
+    "git-bump": "dist/bin/git-bump.js"
   },
   "scripts": {
-    "preinstall": "bun build index.ts bin/start.ts bin/bump.ts --outdir dist"
+    "preinstall": "bun build index.ts bin/gitj.ts bin/git-jira.ts bin/git-jira-start.ts bin/git-bump.ts --outdir dist"
   },
   "devDependencies": {
+    "@types/commander": "^2.12.2",
     "bun-types": "latest"
   },
   "directories": {
@@ -21,6 +24,7 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "commander": "^11.0.0",
     "minimist": "^1.2.8"
   },
   "main": "dist/start.js dist/bump.js",
