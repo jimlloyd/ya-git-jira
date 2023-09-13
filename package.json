@@ -8,10 +8,11 @@
     "gitj" : "dist/bin/gitj.js",
     "git-jira" : "dist/bin/git-jira.js",
     "git-jira-start": "dist/bin/git-jira-start.js",
+    "git-jira-issues": "dist/bin/git-jira-issues.js",
     "git-bump": "dist/bin/git-bump.js"
   },
   "scripts": {
-    "preinstall": "bun build index.ts bin/gitj.ts bin/git-jira.ts bin/git-jira-start.ts bin/git-bump.ts --outdir dist"
+    "preinstall": "bun build index.ts bin/gitj.ts bin/git-jira.ts bin/git-jira-start.ts bin/git-jira-issues.ts bin/git-bump.ts --outdir dist"
   },
   "devDependencies": {
     "@types/commander": "^2.12.2",

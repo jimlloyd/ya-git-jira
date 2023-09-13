@@ -7,6 +7,7 @@ import { program } from 'commander'
 
 program
     .command('start', 'Create a new branch for a given Jira issue')
+    .command('issues', 'List your unresolved Jira issues')
 
 program
     .action(() => {

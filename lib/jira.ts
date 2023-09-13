@@ -27,16 +27,32 @@ export async function get(endpoint: string): Promise<JSONValue> {
 }
 
 type Issue = JSONValue & {
+    key: string,
     fields: {
         summary: string
     }
 }
 
-
 export async function getIssue(issue: string): Promise<Issue> {
     return await get(`/issue/${issue}`) as Issue
 }
 
-export async function getMyself(): Promise<JSONValue> {
-    return await get("/myself")
+type Myself = JSONValue & {
+    accountId: string
+}
+
+export async function getMyself(): Promise<Myself> {
+    return await get("/myself") as Myself
+}
+
+type SearchResponse = JSONValue & {
+    issues: Array<Issue>
+}
+
+export async function myUnresolvedIssues(): Promise<Array<Issue>> {
+    const myself = await getMyself()
+    const myselfId = myself.accountId
+    const jql = `assignee = ${myselfId} AND resolution = Unresolved`
+    const issues = await get(`/search?jql=${encodeURIComponent(jql)}`) as SearchResponse
+    return issues.issues
 }
