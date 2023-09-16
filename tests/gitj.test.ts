@@ -7,10 +7,10 @@ test("testing works", async (): Promise<void> => {
 })
 
 test("gitj works", async (): Promise<void> => {
-    const { err, code }: SpawnResult = await spawn(["bun", "run", "bin/gitj.ts"])
-    expect(err).toMatch("Usage:")
-    expect(err).toMatch("Bump the version number in the current branch")
-    expect(err).toMatch("A set of commands for working with Jira")
+    const { out, code }: SpawnResult = await spawn(["bun", "run", "bin/gitj.ts"])
+    expect(out).toMatch("Usage:")
+    expect(out).toMatch("Bump the version number in the current branch")
+    expect(out).toMatch("A set of commands for working with Jira")
     expect(code).toBe(0)
 })
 
