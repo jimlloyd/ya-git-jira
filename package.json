@@ -1,7 +1,7 @@
 {
   "name": "ya-git-jira",
   "description": "git extensions for Jira integration. Assumes bun is installed.",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "module": "dist/index.js",
   "type": "module",
   "bin": {
