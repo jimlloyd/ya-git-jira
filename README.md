@@ -1,13 +1,32 @@
 # ya-git-jira - Yet Another Git Jira
 
-This package installs two applications (for now) that are written to be
+This package installs several scripts that are written to be
 usable as `git` extensions, i.e. sub-commands of the `git` command.
 The extensions faciliate workflow when using `git` for source control and `jira`
 for issue tracking. Other similar packages exist -- thus the "yet another"
 in the name.
 
-This package will likely evolve over time to include some other workflow cases.
-For now, the two commands are:
+This package will likely evolve over time to include more workflow cases.
+
+## gitj -- A test driver to use instead of `git <command>`
+
+It can be useful to run these commands as if they were being invoked through
+`git` but using a proxy for `git` than can only execute the commands in this
+package.
+
+For example, to see the available top level commands, run `gitj --help`:
+
+```
+$ gitj ---help
+Usage: gitj [options] [command]
+
+Options:
+  -h, --help  display help for command
+
+Commands:
+  bump
+  jira        A collection of jira utility commands
+```
 
 ## git-jira-start -- Create a new topic branch for work on an issue
 

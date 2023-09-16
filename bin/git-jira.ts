@@ -2,26 +2,23 @@
 
 import { Command } from 'commander'
 import { isMain } from '../lib/is_main'
+import start from './git-jira-start'
+import issue from './git-jira-issue'
+import issues from './git-jira-issues'
 
-const start = (await import('./git-jira-start')).create()
-const issue = (await import('./git-jira-issue')).create()
-const issues = (await import('./git-jira-issues')).create()
-
-export function create() {
+export function create(): Command {
     const program = new Command()
     program
         .name('jira')
-        .addCommand(start)
-        .addCommand(issue)
-        .addCommand(issues)
-        .action(() => {
-            program.help()
-        })
+        .description('A set of commands for working with Jira')
+        .addCommand(start())
+        .addCommand(issue())
+        .addCommand(issues())
     return program
 }
 
 if (isMain('git-jira')) {
-    create().parse(process.argv)
+    create().parse(Bun.argv)
 }
 
 export default create

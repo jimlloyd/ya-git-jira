@@ -15,6 +15,7 @@ export function create(): Command {
     const program = new Command()
     program
         .name('start')
+        .description('Start working on an issue by creating a branch')
         .argument('issue', 'Issue ID')
         .action(async (issueId: string) => {
             const issue = await getIssue(issueId)
@@ -32,7 +33,7 @@ export function create(): Command {
 }
 
 if (isMain('git-jira-issues')) {
-    create().parse(process.argv)
+    create().parse(Bun.argv)
 }
 
 export default create

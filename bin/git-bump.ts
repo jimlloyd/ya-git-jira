@@ -8,6 +8,7 @@ export function create(): Command {
     const program = new Command()
     program
         .name('bump')
+        .description('Bump the version number in the current branch')
         .action(async () => {
             const currentBranch = await getCurrentBranch()
 
@@ -27,7 +28,7 @@ export function create(): Command {
 }
 
 if (isMain('git-bump')) {
-    create().parse(process.argv)
+    create().parse(Bun.argv)
 }
 
 export default create

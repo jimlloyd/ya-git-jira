@@ -11,8 +11,11 @@ export interface JiraConfig {
 
 export async function getJiraConfig(): Promise<JiraConfig> {
     const host = await getConfig("jira.host")
+    if (!host) throw new Error("jira.host not in git config")
     const user = await getConfig("jira.user") || await getConfig("user.email")
+    if (!user) throw new Error("jira.user or user.email not in git config")
     const pat = await getConfig("jira.pat")
+    if (!pat) throw new Error("jira.pat not in git config")
     const token = Buffer.from(`${user}:${pat}`).toString('base64')
     return { host, token }
 }
