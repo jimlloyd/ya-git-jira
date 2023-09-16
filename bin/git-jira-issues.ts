@@ -8,6 +8,7 @@ export function create(): Command {
     const program = new Command()
     program
         .name('issues')
+        .description('List your unresolved issues')
         .action(async (options) => {
             const issues = await myUnresolvedIssues()
             console.log(`You have ${issues.length} unresolved issues`)
@@ -19,7 +20,7 @@ export function create(): Command {
 }
 
 if (isMain('git-jira-issues')) {
-    create().parse(process.argv)
+    create().parse(Bun.argv)
 }
 
 export default create
