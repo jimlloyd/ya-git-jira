@@ -28,7 +28,7 @@ export function create(): Command {
 }
 
 if (isMain('git-bump')) {
-    create().parse(Bun.argv)
+    await create().parseAsync(Bun.argv)
 }
 
 export default create

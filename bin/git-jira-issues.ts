@@ -20,7 +20,7 @@ export function create(): Command {
 }
 
 if (isMain('git-jira-issues')) {
-    create().parse(Bun.argv)
+    await create().parseAsync(Bun.argv)
 }
 
 export default create

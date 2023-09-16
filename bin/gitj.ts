@@ -15,8 +15,11 @@ export function create(): Command {
     program
         .addCommand(bump())
         .addCommand(jira())
+        .action(() => {
+            program.help()
+        })
     return program
 }
 
 const command = create()
-command.parse(Bun.argv)
+await command.parseAsync(Bun.argv)
