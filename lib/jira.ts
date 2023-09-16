@@ -28,6 +28,7 @@ export async function get(endpoint: string): Promise<JSONValue> {
 
 type Issue = JSONValue & {
     key: string,
+    self: string,
     fields: {
         summary: string
     }
