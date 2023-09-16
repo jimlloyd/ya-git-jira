@@ -20,9 +20,7 @@ export async function spawn(args: string[], options: SpawnOptions = defaultOptio
     const stderr = new Response(proc.stderr)
     const [out, err, exitCode, signal] = await Promise.all([stdout.text(), stderr.text(), proc.exitCode, proc.signalCode])
     let code = 0
-    if (exitCode === null) {
-        code = 127
-    } else {
+    if (exitCode !== null) {
         code = exitCode
     }
     if (!out && !err && !options.expectQuiet) {
