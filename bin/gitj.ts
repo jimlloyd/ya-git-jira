@@ -19,4 +19,4 @@ export function create(): Command {
 }
 
 const command = create()
-command.parse(Bun.argv)
+await command.parseAsync(Bun.argv)
