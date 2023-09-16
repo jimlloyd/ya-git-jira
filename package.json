@@ -5,8 +5,8 @@
   "module": "dist/index.js",
   "type": "module",
   "bin": {
-    "gitj" : "dist/bin/gitj.js",
-    "git-jira" : "dist/bin/git-jira.js",
+    "gitj": "dist/bin/gitj.js",
+    "git-jira": "dist/bin/git-jira.js",
     "git-jira-start": "dist/bin/git-jira-start.js",
     "git-jira-issues": "dist/bin/git-jira-issues.js",
     "git-bump": "dist/bin/git-bump.js"
@@ -25,8 +25,7 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "commander": "^11.0.0",
-    "minimist": "^1.2.8"
+    "commander": "^11.0.0"
   },
   "main": "dist/start.js dist/bump.js",
   "repository": {

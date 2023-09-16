@@ -1,16 +1,27 @@
-#!/usr/bin/env bun
+#!/usr/bin/env bun run
 
-// This is the root for the jira commands CLI. It's job is to parse the command
-// from the command line and then call the appropriate jira subcommand.
+import { Command } from 'commander'
+import { isMain } from '../lib/is_main'
 
-import { program } from 'commander'
+const start = (await import('./git-jira-start')).create()
+const issue = (await import('./git-jira-issue')).create()
+const issues = (await import('./git-jira-issues')).create()
 
-program
-    .command('start', 'Create a new branch for a given Jira issue')
-    .command('issues', 'List your unresolved Jira issues')
+export function create() {
+    const program = new Command()
+    program
+        .name('jira')
+        .addCommand(start)
+        .addCommand(issue)
+        .addCommand(issues)
+        .action(() => {
+            program.help()
+        })
+    return program
+}
 
-program
-    .action(() => {
-        program.help()
-    })
-    .parse(process.argv)
+if (isMain('git-jira')) {
+    create().parse(process.argv)
+}
+
+export default create
