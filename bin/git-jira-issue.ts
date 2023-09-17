@@ -3,7 +3,7 @@
 import { Command } from 'commander'
 import { getIssue } from "../lib/jira"
 import { isMain } from '../lib/is_main'
-import { getJiraConfig } from '../lib/git'
+import { getJiraConfig } from '../lib/jira'
 
 export function create(): Command {
     const program = new Command()
