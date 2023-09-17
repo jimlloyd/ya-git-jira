@@ -1,5 +1,6 @@
-import { getConfig } from "./git"
+import { getConfig, getRemote } from "./git"
 import type { JSONValue } from "./json"
+import path from 'node:path'
 
 export interface GitlabConfig {
     host: string
@@ -43,4 +44,43 @@ export type User = JSONValue & {
 
 export async function whoami(): Promise<User> {
     return await get("/user") as User
+}
+
+export type Project = JSONValue & {
+    id: number
+    name: string
+    path: string
+    path_with_namespace: string
+    visibility: string
+    ssh_url_to_repo: string
+}
+
+export async function getProjects(paths: string[]): Promise<Array<Project>> {
+    let search: string = ""
+    if (paths.length > 0) {
+        search = '&search=' + paths.join(",")
+    }
+    return await get(`/projects?visibility=private&membership=true&simple=true${search}`) as Array<Project>
+}
+
+// git@gitlab.com:etagen-internal/linear-generator-config.git
+export async function findProject(ssh_url: string): Promise<Project> {
+    const parts = ssh_url.split(':')
+    if (parts.length != 2) {
+        throw new Error(`${ssh_url} is invalid, could not be split into two parts at :`)
+    }
+    const name = path.basename(parts[1], '.git')
+
+    const projects = await getProjects([name])
+    const project = projects.find((p: Project): boolean => {
+        return p.ssh_url_to_repo === ssh_url
+    })
+    if (!project) {
+        throw new Error(`No project with ssh_url_to_repo ${ssh_url} found`)
+    }
+    return project
+}
+
+export async function getMergeRequest(id: string): Promise<JSONValue> {
+    return await get(`/merge_requests/${id}`)
 }
