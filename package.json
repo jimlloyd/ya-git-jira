@@ -1,16 +1,19 @@
 {
   "name": "ya-git-jira",
   "description": "git extensions for Jira integration. Assumes bun is installed.",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "module": "dist/index.js",
   "type": "module",
   "bin": {
-    "gitj": "dist/bin/gitj.js",
-    "git-jira": "dist/bin/git-jira.js",
-    "git-jira-start": "dist/bin/git-jira-start.js",
+    "git-bump": "dist/bin/git-bump.js",
     "git-jira-issue": "dist/bin/git-jira-issue.js",
     "git-jira-issues": "dist/bin/git-jira-issues.js",
-    "git-bump": "dist/bin/git-bump.js"
+    "git-jira-start": "dist/bin/git-jira-start.js",
+    "git-jira": "dist/bin/git-jira.js",
+    "git-lab-projects": "dist/bin/git-lab-projects.js",
+    "git-lab-whoami": "dist/bin/git-lab-whoami.js",
+    "git-lab": "dist/bin/git-lab.js",
+    "gitj": "dist/bin/gitj.js"
   },
   "scripts": {
     "preinstall": "bun run build.ts",
