@@ -7,13 +7,16 @@ function justBase(filename: string): string {
 }
 
 export function isMain(self: string): boolean {
-    const argv1Base = justBase(Bun.argv[1])
+    const arg1 = Bun.argv[1]
+    const argv1Base = justBase(arg1)
     const selfBase = justBase(self)
-    const result = argv1Base == selfBase
-    // console.log({
-    //     argv1Base,
-    //     selfBase,
-    //     result,
-    // })
+    const result = argv1Base === selfBase
+    console.log({
+        arg1,
+        self,
+        argv1Base,
+        selfBase,
+        result,
+    })
     return result
 }
