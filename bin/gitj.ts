@@ -2,6 +2,7 @@
 
 import bump from './git-bump'
 import jira from './git-jira'
+import lab from './git-lab'
 
 // This is the root of the CLI. It's a proxy for git and not strictly
 // necessary, but it's useful to have for testing
@@ -15,6 +16,7 @@ export function create(): Command {
     program
         .addCommand(bump())
         .addCommand(jira())
+        .addCommand(lab())
         .action(() => {
             program.help()
         })
