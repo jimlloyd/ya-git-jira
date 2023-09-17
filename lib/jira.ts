@@ -1,12 +1,29 @@
 
-import { getJiraConfig } from "../lib/git"
+import { getConfig } from "../lib/git"
+import type { JSONValue } from "../lib/json"
 
-type JSONValue =
-    | string
-    | number
-    | boolean
-    | { [x: string]: JSONValue }
-    | Array<JSONValue>
+export type Issue = JSONValue & {
+    key: string,
+    self: string,
+    fields: {
+        summary: string
+    }
+}
+export interface JiraConfig {
+    host: string
+    token: string
+}
+
+export async function getJiraConfig(): Promise<JiraConfig> {
+    const host = await getConfig("jira.host")
+    if (!host) throw new Error("jira.host not in git config")
+    const user = await getConfig("jira.user") || await getConfig("user.email")
+    if (!user) throw new Error("jira.user or user.email not in git config")
+    const pat = await getConfig("jira.pat")
+    if (!pat) throw new Error("jira.pat not in git config")
+    const token = Buffer.from(`${user}:${pat}`).toString('base64')
+    return { host, token }
+}
 
 export async function get(endpoint: string): Promise<JSONValue> {
     const method = "GET"
@@ -24,14 +41,6 @@ export async function get(endpoint: string): Promise<JSONValue> {
     const request = new Request(uri, options)
     const response = await fetch(request)
     return await response.json()
-}
-
-type Issue = JSONValue & {
-    key: string,
-    self: string,
-    fields: {
-        summary: string
-    }
 }
 
 export async function getIssue(issue: string): Promise<Issue> {
