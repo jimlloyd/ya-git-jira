@@ -13,6 +13,7 @@
     "git-lab-mr-active": "dist/bin/git-lab-mr-active.js",
     "git-lab-mr-todo": "dist/bin/git-lab-mr-todo.js",
     "git-lab-mr": "dist/bin/git-lab-mr.js",
+    "git-lab-namespaces": "dist/bin/git-lab-namespaces.js",
     "git-lab-projects-list": "dist/bin/git-lab-projects-list.js",
     "git-lab-projects-whereami": "dist/bin/git-lab-projects-whereami.js",
     "git-lab-projects": "dist/bin/git-lab-projects.js",

@@ -136,3 +136,7 @@ export async function projectScopedGet(endpoint: string): Promise<JSONValue> {
 export async function getMergeRequest(id: string): Promise<JSONValue> {
     return await projectScopedGet(`/merge_requests/${id}`)
 }
+
+export async function getNamespaces(): Promise<JSONValue> {
+    return await gitlabApi(`/namespaces`)
+}
