@@ -26,10 +26,13 @@ export async function getJiraConfig(): Promise<JiraConfig> {
 }
 
 export async function jiraApi(endpoint: string): Promise<JSONValue> {
+    if (endpoint.startsWith("/")) {
+        console.warn(`jiraApi: endpoint ${endpoint} starts with /`)
+        endpoint = endpoint.slice(1)
+    }
     const method = "GET"
     const { host, token } = await getJiraConfig()
-    const base = `https://${host}/rest/api/3`
-    const uri = `${base}/${endpoint}`
+    const uri = `https://${host}/rest/api/3/${endpoint}`
     const auth = `Basic ${token}`
     const headers = new Headers()
     headers.append("Authorization", auth)
@@ -40,11 +43,13 @@ export async function jiraApi(endpoint: string): Promise<JSONValue> {
     }
     const request = new Request(uri, options)
     const response = await fetch(request)
-    return await response.json()
+    const result = await response.json()
+    return result;
 }
 
 export async function getIssue(issue: string): Promise<Issue> {
-    return await jiraApi(`/issue/${issue}`) as Issue
+    const result = await jiraApi(`issue/${issue}`) as Issue
+    return result
 }
 
 type Myself = JSONValue & {

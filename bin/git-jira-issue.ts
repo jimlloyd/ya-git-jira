@@ -12,9 +12,7 @@ export function create(): Command {
         .description('Get information about an issue')
         .argument('issue', 'Issue ID')
         .option('-v, --verbose', 'Verbose output')
-        .option('-u, --url', 'Show the URL of the issue')
         .action(async (issueId: string, options) => {
-            const { host } = await getJiraConfig()
             const issue = await getIssue(issueId)
             if (!issue) {
                 console.error(`Issue ${issueId} not found`)
@@ -22,10 +20,11 @@ export function create(): Command {
             }
             if (options.verbose) {
                 console.log(issue)
-                process.exit(0)
-            }
-            if (options.url) {
-                console.log(`https://${host}/browse/${issueId}`)
+            } else {
+                const { host } = await getJiraConfig()
+                const summary = issue.fields.summary
+                const url = `https://${host}/browse/${issueId}`
+                console.log({ issueId, summary, url })
             }
         })
     return program
