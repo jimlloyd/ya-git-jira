@@ -7,8 +7,8 @@ import { isMain } from '../lib/is_main'
 export function create(): Command {
     const program = new Command()
     program
-        .name('active')
-        .description('List my active MRs')
+        .name('todo')
+        .description('MRs needing my review')
         .option('-v, --verbose', 'Verbose output')
 
         .action(async (options) => {
@@ -30,6 +30,6 @@ export function create(): Command {
 
 export default create
 
-if (isMain('git-lab-mr-active')) {
+if (isMain('git-lab-merges-todo')) {
     await create().parseAsync(Bun.argv)
 }

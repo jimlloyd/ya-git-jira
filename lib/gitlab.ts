@@ -49,7 +49,6 @@ export async function gitlabApi(endpoint: string): Promise<JSONValue> {
     let result: Array<JSONValue> = partial
     while (partial.length == requested && link)
     {
-        console.info(`Fetching ${link}`)
         let request = new Request(link, options)
         const next_response = await fetch(request)
         link = getNextLink(next_response.headers.get('Link'))

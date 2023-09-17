@@ -3,12 +3,12 @@
 import { Command } from 'commander'
 import { isMain } from '../lib/is_main'
 
-import todo from './git-lab-mr-todo'
+import todo from './git-lab-merges-todo'
 
 export function create(): Command {
     const program = new Command()
     program
-        .name('mr')
+        .name('merges')
         .description('A set of commands for working with GitLab merge requests')
         .addCommand(todo())
         .action(() => program.help())
@@ -17,6 +17,6 @@ export function create(): Command {
 
 export default create
 
-if (isMain('git-lab-mr')) {
+if (isMain('git-lab-merges')) {
     await create().parseAsync(Bun.argv)
 }

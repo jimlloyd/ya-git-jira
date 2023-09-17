@@ -4,7 +4,7 @@ import { Command } from 'commander'
 import { isMain } from '../lib/is_main'
 
 import groups from './git-lab-groups'
-import mr from './git-lab-mr'
+import merges from './git-lab-merges'
 import namespaces from './git-lab-namespaces'
 import projects from './git-lab-projects'
 import whoami from './git-lab-whoami'
@@ -15,7 +15,7 @@ export function create(): Command {
         .name('lab')
         .description('A set of commands for working with GitLab')
         .addCommand(groups())
-        .addCommand(mr())
+        .addCommand(merges())
         .addCommand(namespaces())
         .addCommand(projects())
         .addCommand(whoami())
