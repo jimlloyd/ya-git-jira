@@ -6,7 +6,7 @@ import start from './git-jira-start'
 import issue from './git-jira-issue'
 import issues from './git-jira-issues'
 
-export default function create(): Command {
+export function create(): Command {
     const program = new Command()
     program
         .name('jira')
@@ -17,6 +17,8 @@ export default function create(): Command {
     return program
 }
 
-if (isMain(import.meta.file)) {
+export default create
+
+if (isMain('git-jira')) {
     await create().parseAsync(Bun.argv)
 }

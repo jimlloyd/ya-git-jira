@@ -5,7 +5,7 @@ import { getIssue } from "../lib/jira"
 import { isMain } from '../lib/is_main'
 import { getJiraConfig } from '../lib/jira'
 
-export default function create(): Command {
+export function create(): Command {
     const program = new Command()
     program
         .name('issue')
@@ -31,6 +31,8 @@ export default function create(): Command {
     return program
 }
 
-if (isMain(import.meta.file)) {
+export default create
+
+if (isMain('git-jira-issue')) {
     await create().parseAsync(Bun.argv)
 }

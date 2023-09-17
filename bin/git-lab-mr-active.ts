@@ -1,11 +1,10 @@
 #!/usr/bin/env bun
 
-import path from 'path'
 import { Command } from 'commander'
 import { whoami, type User } from "../lib/gitlab"
 import { isMain } from '../lib/is_main'
 
-export default function create(): Command {
+export function create(): Command {
     const program = new Command()
     program
         .name('active')
@@ -29,6 +28,8 @@ export default function create(): Command {
     return program
 }
 
-if (isMain(import.meta.file)) {
+export default create
+
+if (isMain('git-lab-mr-active')) {
     await create().parseAsync(Bun.argv)
 }

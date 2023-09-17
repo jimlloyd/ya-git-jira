@@ -5,7 +5,7 @@ import { isMain } from '../lib/is_main'
 
 import todo from './git-lab-mr-todo'
 
-export default function create(): Command {
+export function create(): Command {
     const program = new Command()
     program
         .name('mr')
@@ -15,6 +15,8 @@ export default function create(): Command {
     return program
 }
 
-if (isMain(import.meta.file)) {
+export default create
+
+if (isMain('git-lab-mr')) {
     await create().parseAsync(Bun.argv)
 }

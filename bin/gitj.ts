@@ -11,7 +11,7 @@ import lab from './git-lab'
 
 import { Command } from 'commander'
 
-export default function create(): Command {
+export function create(): Command {
     const program: Command = new Command()
     program
         .addCommand(bump())

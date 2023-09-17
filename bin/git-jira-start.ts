@@ -11,7 +11,7 @@ function toKebab(s: string): string {
         .replace(/-$/, "")
 }
 
-export default function create(): Command {
+export function create(): Command {
     const program = new Command()
     program
         .name('start')
@@ -32,6 +32,8 @@ export default function create(): Command {
     return program
 }
 
-if (isMain(import.meta.file)) {
+export default create
+
+if (isMain('git-jira-start')) {
     await create().parseAsync(Bun.argv)
 }

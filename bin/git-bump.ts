@@ -4,7 +4,7 @@ import { createBranch, getCurrentBranch } from "../lib/git"
 import { Command } from 'commander'
 import { isMain } from '../lib/is_main'
 
-export default function create(): Command {
+export function create(): Command {
     const program = new Command()
     program
         .name('bump')
@@ -27,6 +27,8 @@ export default function create(): Command {
     return program
 }
 
-if (isMain(import.meta.file)) {
+export default create
+
+if (isMain('git-bump')) {
     await create().parseAsync(Bun.argv)
 }

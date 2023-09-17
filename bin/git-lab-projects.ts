@@ -6,7 +6,7 @@ import { isMain } from '../lib/is_main'
 import list from './git-lab-projects-list'
 import whereami from './git-lab-projects-whereami'
 
-export default function create(): Command {
+export function create(): Command {
     const program = new Command()
     program
         .name('projects')
@@ -19,6 +19,8 @@ export default function create(): Command {
     return program
 }
 
-if (isMain(import.meta.file)) {
+export default create
+
+if (isMain('git-lab-projects')) {
     await create().parseAsync(Bun.argv)
 }

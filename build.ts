@@ -4,7 +4,7 @@ import { glob } from 'glob'
 const result: BuildOutput = await Bun.build({
     entrypoints: ['./index.ts', ...glob.sync('./bin/*.ts')],
     outdir: './dist',
-    target: 'bun'
+    target: 'bun',
 })
 
 if (result.success) {

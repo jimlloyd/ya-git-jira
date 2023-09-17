@@ -7,7 +7,7 @@ import mr from './git-lab-mr'
 import projects from './git-lab-projects'
 import whoami from './git-lab-whoami'
 
-export default function create(): Command {
+export function create(): Command {
     const program = new Command()
     program
         .name('lab')
@@ -19,6 +19,8 @@ export default function create(): Command {
     return program
 }
 
-if (isMain(import.meta.file)) {
+export default create
+
+if (isMain('git-lab')) {
     await create().parseAsync(Bun.argv)
 }

@@ -11,12 +11,14 @@ export function isMain(self: string): boolean {
     const argv1Base = justBase(arg1)
     const selfBase = justBase(self)
     const result = argv1Base === selfBase
-    console.log({
-        arg1,
-        self,
-        argv1Base,
-        selfBase,
-        result,
-    })
+    // if (result) {
+    //     console.log({
+    //         arg1,
+    //         self,
+    //         argv1Base,
+    //         selfBase,
+    //         result,
+    //     })
+    // }
     return result
 }
