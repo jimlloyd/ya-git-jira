@@ -25,7 +25,7 @@ export async function getJiraConfig(): Promise<JiraConfig> {
     return { host, token }
 }
 
-export async function get(endpoint: string): Promise<JSONValue> {
+export async function jiraApi(endpoint: string): Promise<JSONValue> {
     const method = "GET"
     const { host, token } = await getJiraConfig()
     const base = `https://${host}/rest/api/3`
@@ -44,7 +44,7 @@ export async function get(endpoint: string): Promise<JSONValue> {
 }
 
 export async function getIssue(issue: string): Promise<Issue> {
-    return await get(`/issue/${issue}`) as Issue
+    return await jiraApi(`/issue/${issue}`) as Issue
 }
 
 type Myself = JSONValue & {
@@ -52,7 +52,7 @@ type Myself = JSONValue & {
 }
 
 export async function getMyself(): Promise<Myself> {
-    return await get("/myself") as Myself
+    return await jiraApi("/myself") as Myself
 }
 
 type SearchResponse = JSONValue & {
@@ -63,6 +63,6 @@ export async function myUnresolvedIssues(): Promise<Array<Issue>> {
     const myself = await getMyself()
     const myselfId = myself.accountId
     const jql = `assignee = ${myselfId} AND resolution = Unresolved`
-    const issues = await get(`/search?jql=${encodeURIComponent(jql)}`) as SearchResponse
+    const issues = await jiraApi(`/search?jql=${encodeURIComponent(jql)}`) as SearchResponse
     return issues.issues
 }

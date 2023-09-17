@@ -1,10 +1,10 @@
-#!/usr/bin/env bun run
+#!/usr/bin/env bun
 
 import { Command } from 'commander'
 import { myUnresolvedIssues } from "../lib/jira"
 import { isMain } from '../lib/is_main'
 
-export function create(): Command {
+export default function create(): Command {
     const program = new Command()
     program
         .name('issues')
@@ -19,8 +19,6 @@ export function create(): Command {
     return program
 }
 
-if (isMain('git-jira-issues')) {
+if (isMain(import.meta.file)) {
     await create().parseAsync(Bun.argv)
 }
-
-export default create

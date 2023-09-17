@@ -3,18 +3,14 @@
 import { Command } from 'commander'
 import { isMain } from '../lib/is_main'
 
-import mr from './git-lab-mr'
-import projects from './git-lab-projects'
-import whoami from './git-lab-whoami'
+import todo from './git-lab-mr-todo'
 
 export default function create(): Command {
     const program = new Command()
     program
-        .name('lab')
-        .description('A set of commands for working with GitLab')
-        .addCommand(mr())
-        .addCommand(whoami())
-        .addCommand(projects())
+        .name('mr')
+        .description('A set of commands for working with GitLab merge requests')
+        .addCommand(todo())
         .action(() => program.help())
     return program
 }

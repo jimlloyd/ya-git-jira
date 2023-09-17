@@ -10,6 +10,11 @@
     "git-jira-issues": "dist/bin/git-jira-issues.js",
     "git-jira-start": "dist/bin/git-jira-start.js",
     "git-jira": "dist/bin/git-jira.js",
+    "git-lab-mr-active": "dist/bin/git-lab-mr-active.js",
+    "git-lab-mr-todo": "dist/bin/git-lab-mr-todo.js",
+    "git-lab-mr": "dist/bin/git-lab-mr.js",
+    "git-lab-projects-list": "dist/bin/git-lab-projects-list.js",
+    "git-lab-projects-whereami": "dist/bin/git-lab-projects-whereami.js",
     "git-lab-projects": "dist/bin/git-lab-projects.js",
     "git-lab-whoami": "dist/bin/git-lab-whoami.js",
     "git-lab": "dist/bin/git-lab.js",
@@ -21,7 +26,8 @@
   },
   "devDependencies": {
     "@types/commander": "^2.12.2",
-    "bun-types": "latest"
+    "bun-types": "latest",
+    "typescript": "latest"
   },
   "directories": {
     "lib": "lib"

@@ -1,4 +1,4 @@
-#!/usr/bin/env bun run
+#!/usr/bin/env bun
 
 import bump from './git-bump'
 import jira from './git-jira'
@@ -11,7 +11,7 @@ import lab from './git-lab'
 
 import { Command } from 'commander'
 
-export function create(): Command {
+export default function create(): Command {
     const program: Command = new Command()
     program
         .addCommand(bump())

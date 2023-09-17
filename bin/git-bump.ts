@@ -1,10 +1,10 @@
-#!/usr/bin/env bun run
+#!/usr/bin/env bun
 
 import { createBranch, getCurrentBranch } from "../lib/git"
 import { Command } from 'commander'
 import { isMain } from '../lib/is_main'
 
-export function create(): Command {
+export default function create(): Command {
     const program = new Command()
     program
         .name('bump')
@@ -27,8 +27,6 @@ export function create(): Command {
     return program
 }
 
-if (isMain('git-bump')) {
+if (isMain(import.meta.file)) {
     await create().parseAsync(Bun.argv)
 }
-
-export default create

@@ -1,4 +1,4 @@
-#!/usr/bin/env bun run
+#!/usr/bin/env bun
 
 import { Command } from 'commander'
 import { createBranch } from "../lib/git"
@@ -11,7 +11,7 @@ function toKebab(s: string): string {
         .replace(/-$/, "")
 }
 
-export function create(): Command {
+export default function create(): Command {
     const program = new Command()
     program
         .name('start')
@@ -32,8 +32,6 @@ export function create(): Command {
     return program
 }
 
-if (isMain('git-jira-issues')) {
+if (isMain(import.meta.file)) {
     await create().parseAsync(Bun.argv)
 }
-
-export default create

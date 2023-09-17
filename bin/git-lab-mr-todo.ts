@@ -7,9 +7,10 @@ import { isMain } from '../lib/is_main'
 export default function create(): Command {
     const program = new Command()
     program
-        .name('whoami')
-        .description('get GitLab user information for current user')
+        .name('todo')
+        .description('MRs needing my review')
         .option('-v, --verbose', 'Verbose output')
+
         .action(async (options) => {
             const user: User = await whoami()
             if (!user) {

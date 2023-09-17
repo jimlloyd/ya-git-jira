@@ -1,38 +1,24 @@
-#!/usr/bin/env bun run
+#!/usr/bin/env bun
 
 import { Command } from 'commander'
-import { getProjects, type Project } from "../lib/gitlab"
 import { isMain } from '../lib/is_main'
 
-export function create(): Command {
+import list from './git-lab-projects-list'
+import whereami from './git-lab-projects-whereami'
+
+export default function create(): Command {
     const program = new Command()
     program
         .name('projects')
-        .description('List projects for current user')
-        .option('-v, --verbose', 'Verbose output')
-        .argument('[path...]', 'Namespace paths to filter by')
-        .action(async (paths: string[], options) => {
-            const projects: Array<Project> = await getProjects(paths)
-            if (!projects) {
-                console.error(`No projects!`)
-                process.exit(1)
-            }
-            if (options.verbose) {
-                console.log(projects)
-            }
-            else {
-                let filtered = projects.map((p: Project) => {
-                    const { id, name, path_with_namespace, ssh_url_to_repo } = p
-                    return { id, name, path_with_namespace, ssh_url_to_repo }
-                })
-                console.log(filtered)
-            }
+        .description('A set of commands for working with GitLab projects')
+        .addCommand(list())
+        .addCommand(whereami())
+        .action(() => {
+            program.help()
         })
     return program
 }
 
-if (isMain('git-lab-projects')) {
+if (isMain(import.meta.file)) {
     await create().parseAsync(Bun.argv)
 }
-
-export default create
