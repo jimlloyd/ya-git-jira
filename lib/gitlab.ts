@@ -140,3 +140,13 @@ export async function getMergeRequest(id: string): Promise<JSONValue> {
 export async function getNamespaces(): Promise<JSONValue> {
     return await gitlabApi(`/namespaces`)
 }
+
+export type Group = JSONValue & {
+    id: number
+    name: string
+    full_path: string
+}
+
+export async function getGroups(): Promise<Array<Group>> {
+    return await gitlabApi(`/groups`) as Array<Group>
+}
