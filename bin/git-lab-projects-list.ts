@@ -10,8 +10,9 @@ export function create(): Command {
         .name('list')
         .description('List projects for current user')
         .option('-v, --verbose', 'Verbose output')
+        .option('-m, --match <match>', 'Match projects with paths containing <match>')
         .action(async (options) => {
-            const projects: Array<Project> = await getProjects([])
+            const projects: Array<Project> = await getProjects(options.match)
             if (!projects) {
                 console.error(`No projects!`)
                 process.exit(1)
