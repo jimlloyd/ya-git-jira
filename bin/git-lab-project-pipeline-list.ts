@@ -1,15 +1,18 @@
 #!/usr/bin/env bun
 
 import { Command } from 'commander'
+import { getPackageVersion } from '../lib/package'
 import { getProjectPipelines, type Pipeline } from "../lib/gitlab"
 import { isMain } from '../lib/is_main'
 import debug from 'debug'
 
+const version = await getPackageVersion()
 const dlog = debug('git-lab-project-pipeline-list')
 
 export function create(): Command {
-    const program = new Command()
+    const program: Command = new Command()
     program
+        .version(version)
         .name('list')
         .description('List recent successful pipelines')
         .option('-v, --verbose', 'Verbose output')

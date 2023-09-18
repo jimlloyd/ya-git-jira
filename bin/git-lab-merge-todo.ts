@@ -1,12 +1,15 @@
 #!/usr/bin/env bun
 
 import { Command } from 'commander'
+import { getPackageVersion } from '../lib/package'
 import { getMergeRequestsAssignedToMe, type MergeRequest } from "../lib/gitlab"
 import { isMain } from '../lib/is_main'
+const version = await getPackageVersion()
 
 export function create(): Command {
-    const program = new Command()
+    const program: Command = new Command()
     program
+        .version(version)
         .name('todo')
         .description('MRs needing my review')
         .option('-v, --verbose', 'Verbose output')
