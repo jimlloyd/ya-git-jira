@@ -2,7 +2,7 @@ import { readdirSync } from 'fs';
 import { describe, expect, test } from 'bun:test';
 import { doCommand } from '..';
 
-import { getPackageVersion } from '../lib/package'
+import { getPackageJson, getPackageVersion } from '../lib/package'
 const version = await getPackageVersion()
 
 
@@ -31,4 +31,16 @@ describe('bin scripts', () => {
             });
         });
     });
+
+    describe('all bin/* exist in package.json', async () => {
+        const packageJson = await getPackageJson();
+        const bin = packageJson.bin;
+        scripts.forEach((script) => {
+            test(`"${script}" should be in package.json`, () => {
+                expect(script).toEndWith('.ts')
+                script = script.slice(0, -3)
+                expect(bin[script]).toBeDefined();
+            });
+        });
+    })
 });
