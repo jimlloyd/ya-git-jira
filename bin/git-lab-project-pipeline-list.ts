@@ -3,6 +3,9 @@
 import { Command } from 'commander'
 import { getProjectPipelines, type Pipeline } from "../lib/gitlab"
 import { isMain } from '../lib/is_main'
+import debug from 'debug'
+
+const dlog = debug('git-lab-project-pipeline-list')
 
 export function create(): Command {
     const program = new Command()
@@ -14,7 +17,7 @@ export function create(): Command {
         .option('-s, --status <status>', 'Status of pipelines to list: success | runnning | ', 'success')
         .action(async (options) => {
             const pipelines: Array<Pipeline> = await getProjectPipelines(options)
-            console.debug(`pipelines: ${pipelines}`)
+            dlog(`pipelines:`, pipelines)
             if (!pipelines) {
                 console.error(`No pipelines!`)
                 process.exit(1)

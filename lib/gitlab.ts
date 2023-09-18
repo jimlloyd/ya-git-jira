@@ -1,6 +1,9 @@
 import { getConfig, getRemote } from "./git"
 import type { JSONValue } from "./json"
 import path from 'node:path'
+import debug from 'debug'
+
+const dlog = debug('gitlab')
 
 export interface GitlabConfig {
     host: string
@@ -132,7 +135,7 @@ export async function projectScopedGet(endpoint: string): Promise<JSONValue> {
     }
     const base = `https://${host}/api/v4/projects/${project.id}`
     const uri = `${base}/${endpoint}`
-    console.debug(`projectScopedGet uri: ${uri}`)
+    dlog(`projectScopedGet uri: ${uri}`)
     const headers = new Headers()
     headers.append("Accept", "application/json")
     headers.append('Private-Token', token)
@@ -204,6 +207,6 @@ export async function getProjectPipelines(options: GetPipelineOptions): Promise<
     const pastDate = date.getDate() - days;
     date.setDate(pastDate)
     const updated = date.toISOString()
-    console.debug(`updated: ${updated}`)
+    dlog(`updated: ${updated}`)
     return await projectScopedGet(`pipelines?status=${status}&username=${username}&updated_after=${updated}`) as Array<Pipeline>
 }
