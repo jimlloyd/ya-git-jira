@@ -1,4 +1,4 @@
-#!/usr/bin/env bun run
+#!/usr/bin/env bun
 
 import { Command } from 'commander'
 import { getProjects, type Project } from "../lib/gitlab"
@@ -7,12 +7,12 @@ import { isMain } from '../lib/is_main'
 export function create(): Command {
     const program = new Command()
     program
-        .name('projects')
+        .name('list')
         .description('List projects for current user')
         .option('-v, --verbose', 'Verbose output')
-        .argument('[path...]', 'Namespace paths to filter by')
-        .action(async (paths: string[], options) => {
-            const projects: Array<Project> = await getProjects(paths)
+        .option('-m, --match <match>', 'Match projects with paths containing <match>')
+        .action(async (options) => {
+            const projects: Array<Project> = await getProjects(options.match)
             if (!projects) {
                 console.error(`No projects!`)
                 process.exit(1)
@@ -31,8 +31,8 @@ export function create(): Command {
     return program
 }
 
-if (isMain('git-lab-projects')) {
+export default create
+
+if (isMain('git-lab-project-list')) {
     await create().parseAsync(Bun.argv)
 }
-
-export default create

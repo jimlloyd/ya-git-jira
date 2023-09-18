@@ -1,4 +1,4 @@
-#!/usr/bin/env bun run
+#!/usr/bin/env bun
 
 import { createBranch, getCurrentBranch } from "../lib/git"
 import { Command } from 'commander'
@@ -27,8 +27,8 @@ export function create(): Command {
     return program
 }
 
+export default create
+
 if (isMain('git-bump')) {
     await create().parseAsync(Bun.argv)
 }
-
-export default create

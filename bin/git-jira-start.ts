@@ -1,4 +1,4 @@
-#!/usr/bin/env bun run
+#!/usr/bin/env bun
 
 import { Command } from 'commander'
 import { createBranch } from "../lib/git"
@@ -32,8 +32,8 @@ export function create(): Command {
     return program
 }
 
-if (isMain('git-jira-issues')) {
+export default create
+
+if (isMain('git-jira-start')) {
     await create().parseAsync(Bun.argv)
 }
-
-export default create

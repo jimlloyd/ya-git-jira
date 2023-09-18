@@ -13,13 +13,13 @@ test("getRemote", async (): Promise<void> => {
 test("findProject linear-generator", async (): Promise<void> => {
     const ssh_url = "git@gitlab.com:etagen-internal/linear-generator.git"
     const project = await findProject(ssh_url)
-    expect(project.ssh_url_to_repo).toBe(ssh_url)
-    expect(project.id).toBe(4053065)
-})
+    expect(project?.ssh_url_to_repo).toBe(ssh_url)
+    expect(project?.id).toBe(4053065)
+}, 15000)
 
 test("findProject eta-lib/base", async (): Promise<void> => {
     const ssh_url = "git@gitlab.com:etagen-internal/eta-lib/base.git"
     const project = await findProject(ssh_url)
-    expect(project.ssh_url_to_repo).toBe(ssh_url)
-    expect(project.id).toBe(42470523)
-})
+    expect(project?.ssh_url_to_repo).toBe(ssh_url)
+    expect(project?.id).toBe(42470523)
+}, 15000)

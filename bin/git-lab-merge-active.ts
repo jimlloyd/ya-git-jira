@@ -7,9 +7,10 @@ import { isMain } from '../lib/is_main'
 export function create(): Command {
     const program = new Command()
     program
-        .name('whoami')
-        .description('get GitLab user information for current user')
+        .name('active')
+        .description('List my active MRs')
         .option('-v, --verbose', 'Verbose output')
+
         .action(async (options) => {
             const user: User = await whoami()
             if (!user) {
@@ -29,6 +30,6 @@ export function create(): Command {
 
 export default create
 
-if (isMain('git-lab-whoami')) {
+if (isMain('git-lab-merge-active')) {
     await create().parseAsync(Bun.argv)
 }
