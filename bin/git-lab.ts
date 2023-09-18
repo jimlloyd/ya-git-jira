@@ -3,17 +3,17 @@
 import { Command } from 'commander'
 import { isMain } from '../lib/is_main'
 
-import groups from './git-lab-groups'
-import merges from './git-lab-merges'
-import namespaces from './git-lab-namespaces'
-import projects from './git-lab-projects'
+import groups from './git-lab-group'
+import merges from './git-lab-merge'
+import namespaces from './git-lab-namespace'
+import projects from './git-lab-project'
 import whoami from './git-lab-whoami'
 
 export function create(): Command {
     const program = new Command()
     program
         .name('lab')
-        .description('A set of commands for working with GitLab')
+        .description('Commands for working with GitLab')
         .addCommand(groups())
         .addCommand(merges())
         .addCommand(namespaces())

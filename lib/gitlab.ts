@@ -79,7 +79,12 @@ export type Project = JSONValue & {
 }
 
 export async function getProjects(match: string): Promise<Array<Project>> {
-    const projects = await gitlabApi(`/projects?membership=true&simple=true`)
+    let search = ''
+    if (match) {
+        const m = encodeURIComponent(match)
+        search = `&search=${m}`
+    }
+    const projects = await gitlabApi(`/projects?membership=true&simple=true${search}`)
     if (!projects) {
         throw new Error(`No projects!`)
     } else if (!Array.isArray(projects)) {
@@ -87,7 +92,6 @@ export async function getProjects(match: string): Promise<Array<Project>> {
         throw new Error(`Projects is not an array!`)
     }
     const projs = projects as Array<Project>
-    console.log(`Searching within a set of ${projs.length} projects for ${match}`)
 
     const filtered = projs.filter((p: Project): boolean => {
         return p.path_with_namespace.toLowerCase().includes(match.toLowerCase())

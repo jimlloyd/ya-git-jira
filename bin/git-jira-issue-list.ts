@@ -7,9 +7,9 @@ import { isMain } from '../lib/is_main'
 export function create(): Command {
     const program = new Command()
     program
-        .name('issues')
+        .name('list')
         .description('List your unresolved issues')
-        .action(async (options) => {
+        .action(async () => {
             const issues = await myUnresolvedIssues()
             console.log(`You have ${issues.length} unresolved issues`)
             issues.forEach(issue => {
@@ -21,6 +21,6 @@ export function create(): Command {
 
 export default create
 
-if (isMain('git-jira-issues')) {
+if (isMain('git-jira-issue-list')) {
     await create().parseAsync(Bun.argv)
 }
