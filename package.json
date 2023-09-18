@@ -18,6 +18,8 @@
     "git-lab-namespace-list": "dist/bin/git-lab-namespace-list.js",
     "git-lab-namespace": "dist/bin/git-lab-namespace.js",
     "git-lab-project-list": "dist/bin/git-lab-project-list.js",
+    "git-lab-project-pipeline": "dist/bin/git-lab-project-pipeline.js",
+    "git-lab-project-pipeline-list": "dist/bin/git-lab-project-pipeline-list.js",
     "git-lab-project-whereami": "dist/bin/git-lab-project-whereami.js",
     "git-lab-project": "dist/bin/git-lab-project.js",
     "git-lab-whoami": "dist/bin/git-lab-whoami.js",

@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 import { Command } from 'commander'
-import { whoami, type User } from "../lib/gitlab"
+import { getMergeRequestsAssignedToMe, type MergeRequest } from "../lib/gitlab"
 import { isMain } from '../lib/is_main'
 
 export function create(): Command {
@@ -10,19 +10,17 @@ export function create(): Command {
         .name('todo')
         .description('MRs needing my review')
         .option('-v, --verbose', 'Verbose output')
-
         .action(async (options) => {
-            const user: User = await whoami()
-            if (!user) {
-                console.error(`No user!`)
-                process.exit(1)
-            }
+            const mrs: MergeRequest[] = await getMergeRequestsAssignedToMe()
             if (options.verbose) {
-                console.log(user)
-                process.exit(0)
+                console.log(mrs)
             }
             else {
-                console.log(user.username)
+                const filtered = mrs.map(mr => {
+                    const { id, title, web_url, source_branch, target_branch, merge_status } = mr
+                    return { id, title, web_url, source_branch, target_branch, merge_status }
+                })
+                console.log(filtered)
             }
         })
     return program

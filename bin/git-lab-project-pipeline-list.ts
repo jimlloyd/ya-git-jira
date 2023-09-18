@@ -1,0 +1,40 @@
+#!/usr/bin/env bun
+
+import { Command } from 'commander'
+import { getProjectPipelines, type Pipeline } from "../lib/gitlab"
+import { isMain } from '../lib/is_main'
+
+export function create(): Command {
+    const program = new Command()
+    program
+        .name('list')
+        .description('List recent successful pipelines')
+        .option('-v, --verbose', 'Verbose output')
+        .option('-d, --days <days>', 'Number of days to look back', '7')
+        .option('-s, --status <status>', 'Status of pipelines to list: success | runnning | ', 'success')
+        .action(async (options) => {
+            const pipelines: Array<Pipeline> = await getProjectPipelines(options)
+            console.debug(`pipelines: ${pipelines}`)
+            if (!pipelines) {
+                console.error(`No pipelines!`)
+                process.exit(1)
+            }
+            if (options.verbose) {
+                console.log(pipelines)
+            }
+            else {
+                let filtered = pipelines.map((p: Pipeline) => {
+                    const { id, web_url, updated_at, ref, sha } = p
+                    return { id, web_url, updated_at, ref, sha }
+                })
+                console.log(filtered)
+            }
+        })
+    return program
+}
+
+export default create
+
+if (isMain('git-lab-project-pipeline-list')) {
+    await create().parseAsync(Bun.argv)
+}
