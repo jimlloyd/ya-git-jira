@@ -2,7 +2,7 @@
 
 import { Command } from 'commander'
 import { getPackageVersion } from '../lib/package'
-import { whoami, type User } from "../lib/gitlab"
+import { getMyMergeRequestsInProgress } from "../lib/gitlab"
 import { isMain } from '../lib/is_main'
 const version = await getPackageVersion()
 
@@ -11,21 +11,24 @@ export function create(): Command {
     program
         .version(version)
         .name('active')
-        .description('List my active MRs')
+        .description('List my MRs in progress')
         .option('-v, --verbose', 'Verbose output')
-
         .action(async (options) => {
-            const user: User = await whoami()
-            if (!user) {
-                console.error(`No user!`)
+            const merges = await getMyMergeRequestsInProgress();
+            if (!merges) {
+                console.error(`No MRs!`)
                 process.exit(1)
             }
             if (options.verbose) {
-                console.log(user)
+                console.log(merges)
                 process.exit(0)
             }
             else {
-                console.log(user.username)
+                const filtered = merges.map(m => {
+                    const { title, web_url, source_branch, target_branch } = m
+                    return { title, web_url, source_branch, target_branch }
+                })
+                console.log(filtered)
             }
         })
     return program

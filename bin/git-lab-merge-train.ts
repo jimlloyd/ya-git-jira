@@ -10,7 +10,7 @@ export function create(): Command {
     program
         .version(version)
         .name('train')
-        .description('Commands for working with GitLab merge trains')
+        .description('Commands for working with GitLab merge trains (Not yet implemented)')
         .action(() => program.help())
     return program
 }

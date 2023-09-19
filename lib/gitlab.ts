@@ -177,7 +177,13 @@ export type MergeRequest = JSONValue & {
     merge_status: string
 }
 
-export async function getMergeRequestsAssignedToMe() : Promise<Array<MergeRequest>>
+export async function getMyMergeRequestsInProgress() : Promise<Array<MergeRequest>>
+{
+    const me = await whoami()
+    return await gitlabApi(`merge_requests?state=opened&author_id=${me.id}`) as Array<MergeRequest>
+}
+
+export async function getMyMergeRequestsToReview() : Promise<Array<MergeRequest>>
 {
     const me = await whoami()
     return await gitlabApi(`merge_requests?state=opened&reviewer_id=${me.id}`) as Array<MergeRequest>
