@@ -15,6 +15,7 @@
     "git-lab-group": "dist/bin/git-lab-group.js",
     "git-lab-merge-active": "dist/bin/git-lab-merge-active.js",
     "git-lab-merge-todo": "dist/bin/git-lab-merge-todo.js",
+    "git-lab-merge-train-list": "dist/bin/git-lab-merge-train-list.js",
     "git-lab-merge-train": "dist/bin/git-lab-merge-train.js",
     "git-lab-merge": "dist/bin/git-lab-merge.js",
     "git-lab-namespace-list": "dist/bin/git-lab-namespace-list.js",
