@@ -1,5 +1,6 @@
 import { test, expect } from "bun:test"
-import { findProject, getRemote } from ".."
+import { findProject } from "../lib/gitlab/project"
+import { getRemote } from "../lib/git"
 
 test("testing works", async (): Promise<void> => {
     expect(true).toBe(true)

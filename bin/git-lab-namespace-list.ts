@@ -3,7 +3,8 @@
 import { Command } from 'commander'
 import { getPackageVersion } from '../lib/package'
 import { isMain } from '../lib/is_main'
-import { getNamespaces } from '../lib/gitlab'
+import { getNamespaces } from '../lib/gitlab/namespace'
+
 const version = await getPackageVersion()
 
 export function create(): Command {

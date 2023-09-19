@@ -2,7 +2,7 @@
 
 import { Command } from 'commander'
 import { getPackageVersion } from '../lib/package'
-import { whoami, type User } from "../lib/gitlab"
+import { whoami, type User } from "../lib/gitlab/user"
 import { isMain } from '../lib/is_main'
 const version = await getPackageVersion()
 

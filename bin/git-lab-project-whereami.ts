@@ -2,7 +2,7 @@
 
 import { Command } from 'commander'
 import { getPackageVersion } from '../lib/package'
-import { findProject } from "../lib/gitlab"
+import { findProject } from "../lib/gitlab/project"
 import { getRemote } from '../lib/git'
 import { isMain } from '../lib/is_main'
 const version = await getPackageVersion()
