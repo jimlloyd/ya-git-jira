@@ -1,24 +1,27 @@
 #!/usr/bin/env bun
 
 import { Command } from 'commander'
-import { getMergeRequestsAssignedToMe, type MergeRequest } from "../lib/gitlab"
+import { getPackageVersion } from '../lib/package'
+import { getMyMergeRequestsToReview, type MergeRequest } from "../lib/gitlab"
 import { isMain } from '../lib/is_main'
+const version = await getPackageVersion()
 
 export function create(): Command {
-    const program = new Command()
+    const program: Command = new Command()
     program
+        .version(version)
         .name('todo')
         .description('MRs needing my review')
         .option('-v, --verbose', 'Verbose output')
         .action(async (options) => {
-            const mrs: MergeRequest[] = await getMergeRequestsAssignedToMe()
+            const mrs: MergeRequest[] = await getMyMergeRequestsToReview()
             if (options.verbose) {
                 console.log(mrs)
             }
             else {
                 const filtered = mrs.map(mr => {
-                    const { id, title, web_url, source_branch, target_branch, merge_status } = mr
-                    return { id, title, web_url, source_branch, target_branch, merge_status }
+                    const { title, web_url, source_branch, target_branch } = mr
+                    return { title, web_url, source_branch, target_branch }
                 })
                 console.log(filtered)
             }

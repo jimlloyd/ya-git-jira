@@ -3,25 +3,24 @@
 import { Command } from 'commander'
 import { getPackageVersion } from '../lib/package'
 import { isMain } from '../lib/is_main'
-import start from './git-jira-start'
-import issue from './git-jira-issue'
-import issues from './git-jira-issue-list'
+import { getMergeTrains } from '../lib/gitlab/merge-trains'
 const version = await getPackageVersion()
 
 export function create(): Command {
     const program: Command = new Command()
     program
         .version(version)
-        .name('jira')
-        .description('Commands for working with Jira')
-        .addCommand(start())
-        .addCommand(issue())
-        .addCommand(issues())
+        .name('list')
+        .description('List merge trains for the current project')
+        .action(async () => {
+            const trains = await getMergeTrains()
+            console.log(trains)
+        })
     return program
 }
 
 export default create
 
-if (isMain('git-jira')) {
+if (isMain('git-lab-merge-train-list')) {
     await create().parseAsync(Bun.argv)
 }

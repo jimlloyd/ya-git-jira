@@ -1,12 +1,15 @@
 #!/usr/bin/env bun
 
 import { Command } from 'commander'
+import { getPackageVersion } from '../lib/package'
 import { isMain } from '../lib/is_main'
 import { getGroups } from '../lib/gitlab'
+const version = await getPackageVersion()
 
 export function create(): Command {
-    const program = new Command()
+    const program: Command = new Command()
     program
+        .version(version)
         .name('list')
         .description('List groups for the current user')
         .option("-v, --verbose", "Verbose output")

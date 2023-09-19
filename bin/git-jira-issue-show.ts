@@ -1,13 +1,16 @@
 #!/usr/bin/env bun
 
 import { Command } from 'commander'
+import { getPackageVersion } from '../lib/package'
 import { getIssue } from "../lib/jira"
 import { isMain } from '../lib/is_main'
 import { getJiraConfig } from '../lib/jira'
+const version = await getPackageVersion()
 
 export function create(): Command {
-    const program = new Command()
+    const program: Command = new Command()
     program
+        .version(version)
         .name('show')
         .description('Show information about one issue')
         .argument('issue', 'Issue ID')
