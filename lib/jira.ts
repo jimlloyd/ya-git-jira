@@ -14,13 +14,18 @@ export interface JiraConfig {
     token: string
 }
 
+const gitEmailP = getConfig("user.email")
+const jiraEmailP = getConfig("jira.user")
+const hostP = getConfig("jira.host")
+const tokenP = getConfig("jira.token")
+
 export async function getJiraConfig(): Promise<JiraConfig> {
-    const host = await getConfig("jira.host")
+    const host = await hostP
     if (!host) throw new Error("jira.host not in git config")
-    const user = await getConfig("jira.user") || await getConfig("user.email")
+    const user = await jiraEmailP || await gitEmailP
     if (!user) throw new Error("jira.user or user.email not in git config")
-    const pat = await getConfig("jira.pat")
-    if (!pat) throw new Error("jira.pat not in git config")
+    const pat = await tokenP
+    if (!pat) throw new Error("jira.token not in git config")
     const token = Buffer.from(`${user}:${pat}`).toString('base64')
     return { host, token }
 }

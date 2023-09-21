@@ -1,7 +1,7 @@
-import { doCommand } from "./spawn"
+import { doCommand, defaultOptions } from "./spawn"
 
-export async function getConfig(key: string): Promise<string> {
-    return doCommand(["git", "config", "--get", key])
+export async function getConfig(key: string, options = defaultOptions): Promise<string> {
+    return doCommand(["git", "config", "--get", key], options)
 }
 
 export async function createBranch(name: string): Promise<string> {
