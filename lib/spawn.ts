@@ -10,7 +10,7 @@ export interface SpawnOptions {
     expectQuiet?: boolean
 }
 
-const defaultOptions: SpawnOptions = {
+export const defaultOptions: SpawnOptions = {
     expectQuiet: false,
 }
 
@@ -29,8 +29,8 @@ export async function spawn(args: string[], options: SpawnOptions = defaultOptio
     return { out: out.trim(), err: err.trim(), code }
 }
 
-export async function doCommand(args: string[]): Promise<string> {
-    const { out, err } = await spawn(args)
+export async function doCommand(args: string[], options: SpawnOptions = defaultOptions): Promise<string> {
+    const { out, err } = await spawn(args, options)
     if (err) console.error(err)
     return out
 }

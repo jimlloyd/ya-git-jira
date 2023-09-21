@@ -17,16 +17,63 @@ package.
 For example, to see the available top level commands, run `gitj --help`:
 
 ```
-$ gitj ---help
+$ gitj help
 Usage: gitj [options] [command]
 
 Options:
-  -h, --help  display help for command
+  -V, --version   output the version number
+  -h, --help      display help for command
 
 Commands:
-  bump
-  jira        A collection of jira utility commands
+  bump [options]  Bump the version number in the current branch
+  jira [options]  Commands for working with Jira
+  lab [options]   Commands for working with GitLab
 ```
+
+## Command hierarchy and naming conventions
+
+The `git jira` and `git lab` commands are arranged in a hierarchy with a structure
+and naming conventions that are indended to make it easy to navigate the existing
+commands and to also make it relatively easy to decide where a new command should
+go into the hierarchy. The current hierarchy is:
+
+```
+gitj
+    bump
+    jira
+        issue
+            list
+            show
+        start
+    lab
+        group
+            list
+        merge
+            active
+            todo
+            train
+                list
+        namespace
+            list
+        project
+            list
+            pipeline
+                list
+            whereami
+    whoami
+```
+
+The pattern `<command> list | show` that is used for `issue` will probably become
+a common pattern everywhere that `list` appears above. The subcommand `list` implies
+that multiple items are return, whereas `show` implies seeing the details for a single item.
+
+The `merge` subcommands `active` vs `todo` are both commands that result in a list.
+We might refactor them to instead be `list --active` and `list --todo` which would
+be more consistent.
+
+The `git jira start` command might more logically be `git jira issue start`
+but `start` implies *issue* and it is expected to be one of the most commonly
+executed commands so we elevate it the hierarchy.
 
 ## git-jira-start -- Create a new topic branch for work on an issue
 
@@ -86,34 +133,37 @@ $ npm install -g ya-git-jira
 
 All configuration is via `git config` settings. If your company has multiple
 repositories that all using Jira issue tracking then you probably want to use
-the global config by adding the `-g` option to the commands below.
+the global config by adding the `--global` option to the commands below.
 
-### Host
+### Jira
 
-You must provide the host name of your Jira cloud service (usually `yourcompany.atlassian.net`) via  `git config`:
+The `git jira` comands require your Jira `host` and `token`. The `host` is your Jira cloud service (usually `yourcompany.atlassian.net`).
+To create an API token follow the instructions [here](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/).
 
 ```
 $ git config jira.host yourcompany.atlassian.net
+$ git config jira.token "<long token here>"
 ```
 
-### API Token
+### GitLab
 
-This package requries that you create a API Token (a.k.a. Personal Access Token) for your Atlassian
-account, as described [here](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/).
-
-You make the token available to `git-jira` via the `git config` command:
+Likewise the `git lab` comands require your GitLab `host` and `token`, though the default `host` `gitlab.com` will be sufficient
+for many users. To create an API token follow the instructions [here](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html#create-a-personal-access-token)
 
 ```
-$ git config jira.pat "<long token here>"
+$ git config gitlab.host gitlab.com
+$ git config gitlab.token "<long token here>"
 ```
 
 ### Email address
 
-`git-jira` also needs the email address associated with your Atlassian account.
-If that email address is the same as your `user.email` setting you don't need to
-add any other configuration. If you use different email addresses for `git` and Atlassian
-then you need to add the email address via `git config` like this:
+Both `git lab` and `git jira` also need the email address associated associated with those accounts.
+Since `git` itself requires an email addres via the setting `user.email`, it is a reasonable default setting
+that will work for many users. But if necessary, you can specify the different email addresses
+using these two settings:
+
 
 ```
-$ git config jira.email <email-address>
+$ git config jira.user <email-address>
+$ git config gitlab.user <email-address>
 ```
