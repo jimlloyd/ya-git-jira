@@ -5,8 +5,8 @@ import { getPackageVersion } from '../lib/package'
 import { isMain } from '../lib/is_main'
 import groups from './git-lab-group'
 import merges from './git-lab-merge'
-import namespaces from './git-lab-namespace'
-import projects from './git-lab-project'
+import namespace from './git-lab-namespace'
+import project from './git-lab-project'
 import whoami from './git-lab-whoami'
 const version = await getPackageVersion()
 
@@ -18,8 +18,8 @@ export function create(): Command {
         .description('Commands for working with GitLab')
         .addCommand(groups())
         .addCommand(merges())
-        .addCommand(namespaces())
-        .addCommand(projects())
+        .addCommand(namespace())
+        .addCommand(project())
         .addCommand(whoami())
         .action(() => program.help())
     return program

@@ -11,7 +11,7 @@ export function create(): Command {
     const program: Command = new Command()
     program
         .version(version)
-        .name('projects')
+        .name('project')
         .description('Commands for working with GitLab projects')
         .addCommand(list())
         .addCommand(whereami())
