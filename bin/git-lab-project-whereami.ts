@@ -5,6 +5,8 @@ import { getPackageVersion } from '../lib/package'
 import { findProject } from "../lib/gitlab/project"
 import { getAncestry, getCurrentBranch, getRemote } from '../lib/git'
 import { isMain } from '../lib/is_main'
+import { stringify } from 'yaml'
+
 const version = await getPackageVersion()
 
 export function create(): Command {
@@ -26,12 +28,14 @@ export function create(): Command {
                 process.exit(1)
             }
             const branch = await getCurrentBranch()
-            const loglines = await getAncestry(3)
+            const ancestry = await getAncestry(3)
             if (options.verbose) {
                 console.log(project)
             } else {
                 const { id, name, path_with_namespace, ssh_url_to_repo } = project
-                console.log({id, name, path_with_namespace, ssh_url_to_repo, branch, loglines })
+                const output = {id, name, path_with_namespace, ssh_url_to_repo, branch, ancestry}
+                const yamlText = stringify(output)
+                console.log(yamlText)
             }
         })
     return program
