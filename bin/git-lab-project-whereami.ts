@@ -3,7 +3,7 @@
 import { Command } from 'commander'
 import { getPackageVersion } from '../lib/package'
 import { findProject } from "../lib/gitlab/project"
-import { getRemote } from '../lib/git'
+import { getAncestry, getCurrentBranch, getRemote } from '../lib/git'
 import { isMain } from '../lib/is_main'
 const version = await getPackageVersion()
 
@@ -20,17 +20,18 @@ export function create(): Command {
                 console.error(`No remote!`)
                 process.exit(1)
             }
-            console.log(`Remote: ${ssh_url}`)
             const project = await findProject(ssh_url);
             if (!project) {
                 console.error(`No project!`)
                 process.exit(1)
             }
+            const branch = await getCurrentBranch()
+            const loglines = await getAncestry(3)
             if (options.verbose) {
                 console.log(project)
             } else {
                 const { id, name, path_with_namespace, ssh_url_to_repo } = project
-                console.log({id, name, path_with_namespace, ssh_url_to_repo })
+                console.log({id, name, path_with_namespace, ssh_url_to_repo, branch, loglines })
             }
         })
     return program
