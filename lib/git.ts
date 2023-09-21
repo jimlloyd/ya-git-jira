@@ -18,7 +18,6 @@ export async function getRemote(): Promise<string> {
 
 export async function getAncestry(n: number): Promise<string[]>
 {
-    const loglines: string[] = (await doCommand([`git`, `log`, `--first-parent`, `--oneline`, `--decorate`, `-n`, `${n}`])).split('\n')
-
-    return loglines
+    const ancestry: string[] = (await doCommand([`git`, `log`, `--first-parent`, `--oneline`, `--decorate`, `-n`, `${n}`])).split('\n')
+    return ancestry
 }
