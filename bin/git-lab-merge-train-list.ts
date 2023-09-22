@@ -3,7 +3,8 @@
 import { Command } from 'commander'
 import { getPackageVersion } from '../lib/package'
 import { isMain } from '../lib/is_main'
-import { getMergeTrains } from '../lib/gitlab/merge-trains'
+import { briefly_list, getMergeTrains } from '../lib/gitlab/merge-trains'
+import { renderYaml } from '../lib/json'
 const version = await getPackageVersion()
 
 export function create(): Command {
@@ -11,10 +12,15 @@ export function create(): Command {
     program
         .version(version)
         .name('list')
+        .option('-v, --verbose', 'Verbose output')
         .description('List merge trains for the current project')
-        .action(async () => {
+        .action(async (options) => {
             const trains = await getMergeTrains()
-            console.log(trains)
+            if (options.verbose) {
+                renderYaml(trains)
+            } else {
+                renderYaml(briefly_list(trains))
+            }
         })
     return program
 }

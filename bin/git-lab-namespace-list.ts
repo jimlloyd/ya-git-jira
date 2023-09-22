@@ -4,6 +4,7 @@ import { Command } from 'commander'
 import { getPackageVersion } from '../lib/package'
 import { isMain } from '../lib/is_main'
 import { getNamespaces } from '../lib/gitlab/namespace'
+import { renderYaml } from '../lib/json'
 
 const version = await getPackageVersion()
 
@@ -15,7 +16,7 @@ export function create(): Command {
         .description('List namespaces for the current user')
         .action(async () => {
             const namespaces = await getNamespaces()
-            console.log(namespaces)
+            renderYaml(namespaces)
         })
     return program
 }

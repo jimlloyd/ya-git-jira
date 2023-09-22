@@ -4,6 +4,7 @@ import { Command } from 'commander'
 import { getPackageVersion } from '../lib/package'
 import { getMyMergeRequestsInProgress } from "../lib/gitlab"
 import { isMain } from '../lib/is_main'
+import { renderYaml } from '../lib/json'
 const version = await getPackageVersion()
 
 export function create(): Command {
@@ -20,7 +21,7 @@ export function create(): Command {
                 process.exit(1)
             }
             if (options.verbose) {
-                console.log(merges)
+                renderYaml(merges)
                 process.exit(0)
             }
             else {
@@ -28,7 +29,7 @@ export function create(): Command {
                     const { title, web_url, source_branch, target_branch } = m
                     return { title, web_url, source_branch, target_branch }
                 })
-                console.log(filtered)
+                renderYaml(filtered)
             }
         })
     return program

@@ -4,6 +4,7 @@ import { Command } from 'commander'
 import { getPackageVersion } from '../lib/package'
 import { isMain } from '../lib/is_main'
 import { getGroups } from '../lib/gitlab'
+import { renderYaml } from '../lib/json'
 const version = await getPackageVersion()
 
 export function create(): Command {
@@ -16,13 +17,13 @@ export function create(): Command {
         .action(async (options) => {
             const groups = await getGroups()
             if (options.verbose)
-                console.log(groups)
+                renderYaml(groups)
             else {
                 const filtered = groups.map(g => {
                     const { id, name, full_path } = g
                     return { id, name, full_path }
                 })
-                console.log(filtered)
+                renderYaml(filtered)
             }
         })
     return program

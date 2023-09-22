@@ -4,6 +4,7 @@ import { Command } from 'commander'
 import { getPackageVersion } from '../lib/package'
 import { whoami, type User } from "../lib/gitlab/user"
 import { isMain } from '../lib/is_main'
+import { renderYaml } from '../lib/json'
 const version = await getPackageVersion()
 
 export function create(): Command {
@@ -20,11 +21,11 @@ export function create(): Command {
                 process.exit(1)
             }
             if (options.verbose) {
-                console.log(user)
+                renderYaml(user)
                 process.exit(0)
             }
             else {
-                console.log(user.username)
+                renderYaml(user.username)
             }
         })
     return program

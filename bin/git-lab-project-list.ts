@@ -4,6 +4,7 @@ import { Command } from 'commander'
 import { getPackageVersion } from '../lib/package'
 import { getProjects, type Project } from "../lib/gitlab/project"
 import { isMain } from '../lib/is_main'
+import { renderYaml } from '../lib/json'
 const version = await getPackageVersion()
 
 export function create(): Command {
@@ -21,14 +22,14 @@ export function create(): Command {
                 process.exit(1)
             }
             if (options.verbose) {
-                console.log(projects)
+                renderYaml(projects)
             }
             else {
                 let filtered = projects.map((p: Project) => {
                     const { id, name, path_with_namespace, ssh_url_to_repo } = p
                     return { id, name, path_with_namespace, ssh_url_to_repo }
                 })
-                console.log(filtered)
+                renderYaml(filtered)
             }
         })
     return program

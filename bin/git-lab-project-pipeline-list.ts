@@ -5,6 +5,7 @@ import { getPackageVersion } from '../lib/package'
 import { getProjectPipelines, type Pipeline } from "../lib/gitlab"
 import { isMain } from '../lib/is_main'
 import debug from 'debug'
+import { renderYaml } from '../lib/json'
 
 const version = await getPackageVersion()
 const dlog = debug('git-lab-project-pipeline-list')
@@ -26,14 +27,14 @@ export function create(): Command {
                 process.exit(1)
             }
             if (options.verbose) {
-                console.log(pipelines)
+                renderYaml(pipelines)
             }
             else {
                 let filtered = pipelines.map((p: Pipeline) => {
                     const { id, web_url, updated_at, ref, sha } = p
                     return { id, web_url, updated_at, ref, sha }
                 })
-                console.log(filtered)
+                renderYaml(filtered)
             }
         })
     return program
