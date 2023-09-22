@@ -20,6 +20,7 @@
     "git-lab-merge": "dist/bin/git-lab-merge.js",
     "git-lab-namespace-list": "dist/bin/git-lab-namespace-list.js",
     "git-lab-namespace": "dist/bin/git-lab-namespace.js",
+    "git-lab-project-ancestry": "dist/bin/git-lab-project-ancestry.js",
     "git-lab-project-list": "dist/bin/git-lab-project-list.js",
     "git-lab-project-pipeline": "dist/bin/git-lab-project-pipeline.js",
     "git-lab-project-pipeline-list": "dist/bin/git-lab-project-pipeline-list.js",
