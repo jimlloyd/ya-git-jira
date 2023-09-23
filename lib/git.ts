@@ -27,13 +27,12 @@ export type CommitHash = string
 // d84a6813acca7f6daae9836f608e8ac8435da159 commit refs/remotes/origin/CTRL-1447-merge-epic-nox-sensor-into-develop
 // d84a6813acca7f6daae9836f608e8ac8435da159 commit refs/remotes/origin/CTRL-1448-merge-epic-nox-sensor-into-release-v24
 
-export type MergeParentHashes = [CommitHash, CommitHash]
 export type MergeParentCommits = [Commit, Commit]
 
 export type Commit = {
     hash: CommitHash
-    branches: string[]
-    tags: string[]
+    branches?: string[]
+    tags?: string[]
 }
 
 function isHash(maybeHash: string): boolean {
@@ -41,7 +40,13 @@ function isHash(maybeHash: string): boolean {
 }
 
 export async function shortHash(hash: string): Promise<string> {
+    if (!isHash(hash)) {
+        console.warn('shortHash given bad hash:', hash)
+    }
     const short = await doCommand([`git`, `rev-parse`, `--short`, hash])
+    if (!isHash(short)) {
+        console.warn('shortHash produced bad hash:', short)
+    }
     return short
 }
 
@@ -97,11 +102,16 @@ export async function asCommit(hash: string): Promise<Commit>
             }
         })
     }
-    return {
+    const result: Commit = {
         hash: await shortHash(hash),
-        branches: dedup(branches),
-        tags: dedup(tags)
     }
+    if (branches.length > 0) {
+        result.branches = dedup(branches)
+    }
+    if (tags.length > 0) {
+        result.tags = dedup(tags)
+    }
+    return result
 }
 
 export type MergeInfo = {
@@ -112,7 +122,6 @@ export type MergeInfo = {
     base: Commit        // this should be an earlier commit on the target (epic) branch
 }
 
-
 export async function getMergeParents(merge_commit: CommitHash): Promise<MergeParentCommits>
 {
     const result: string = (await doCommand([`git`, `rev-list`, `--parents`, `-n`, `1`, merge_commit]))
@@ -121,14 +130,15 @@ export async function getMergeParents(merge_commit: CommitHash): Promise<MergePa
         console.error("Merge parents not valid:", result, parts)
     }
     const [_, parent1, parent2] = parts;
+    if (!isHash(parent1) || !isHash(parent2)) {
+        console.warn("rev-list --parents gave weird result:", { result, parent1, parent2})
+    }
     return [await asCommit(parent1), await asCommit(parent2)];
 }
 
 export async function getMergeBase(parents: MergeParentCommits) : Promise<CommitHash>
 {
-    const base: CommitHash = await doCommand([`git`, `merge-base`, parents[0].hash, parents[1].hash])
-
-    return base
+    return await doCommand([`git`, `merge-base`, parents[0].hash, parents[1].hash])
 }
 
 export async function extractMergeInfo(match: RegExpMatchArray) : Promise<MergeInfo>
@@ -147,16 +157,14 @@ export async function extractAncestry(block: string): Promise<MergeInfo[]> {
     const lines = block.split("\n")
     const ancestry: MergeInfo[] = []
     for (const line of lines) {
-        // console.log("parsing line: ", line);
         const match = line.match(regexMerge)
-        // console.log(match)
         if (match) {
             const info = await extractMergeInfo(match)
             ancestry.push(info)
         }
     }
 
-    const tagIndex = ancestry.findIndex(mergeInfo => mergeInfo.merge_commit.tags.length>0)
+    const tagIndex = ancestry.findIndex(mergeInfo => !!mergeInfo.merge_commit.tags)
     if (tagIndex === -1) {
         console.warn('No tags found in ancestry!')
         return ancestry
