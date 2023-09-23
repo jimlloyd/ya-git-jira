@@ -1,5 +1,5 @@
 import { getGitlabConfig } from "./config"
-import { getRemote } from "../git"
+import { getRemote } from "../git/git-base"
 import { gitlabApi } from "./api"
 import { type JSONValue } from "../json"
 import path from 'node:path'

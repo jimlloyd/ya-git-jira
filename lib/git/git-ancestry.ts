@@ -1,33 +1,5 @@
-import { doCommand, defaultOptions } from "./spawn"
-
-export async function getConfig(key: string, options = defaultOptions): Promise<string> {
-    return doCommand(["git", "config", "--get", key], options)
-}
-
-export async function createBranch(name: string): Promise<string> {
-    return doCommand(["git", "checkout", "-b", name])
-}
-
-export async function getCurrentBranch(): Promise<string> {
-    return doCommand(["git", "rev-parse", "--abbrev-ref", "HEAD"])
-}
-
-export async function getRemote(): Promise<string> {
-    return doCommand(['git', "ls-remote", "--get-url", "origin"])
-}
-
-// 8e616c24b2 Merge branch 'CTRL-1497-hwio-only-write-outputs-on-change' into 'epic/dakota-develop'
-const regexMerge = /^([a-f0-9]+) Merge branch '(\S+)' into '(\S+)'$/
-
-export type CommitHash = string
-
-// $ git for-each-ref --points-at=ab67b66d02
-// fad39f98b4b77a6bad4e25e8e0d63484a3fdfc4c tag    refs/tags/v28.0.0
-// $ git for-each-ref --points-at=d84a6813ac
-// d84a6813acca7f6daae9836f608e8ac8435da159 commit refs/remotes/origin/CTRL-1447-merge-epic-nox-sensor-into-develop
-// d84a6813acca7f6daae9836f608e8ac8435da159 commit refs/remotes/origin/CTRL-1448-merge-epic-nox-sensor-into-release-v24
-
-export type MergeParentCommits = [Commit, Commit]
+import { CommitHash, isHash, shortHash } from './git-hash'
+import { doCommand } from '../spawn'
 
 export type Commit = {
     hash: CommitHash
@@ -35,20 +7,7 @@ export type Commit = {
     tags?: string[]
 }
 
-function isHash(maybeHash: string): boolean {
-    return maybeHash.match(/^[a-f0-9]+$/) != null
-}
-
-export async function shortHash(hash: string): Promise<string> {
-    if (!isHash(hash)) {
-        console.warn('shortHash given bad hash:', hash)
-    }
-    const short = await doCommand([`git`, `rev-parse`, `--short`, hash])
-    if (!isHash(short)) {
-        console.warn('shortHash produced bad hash:', short)
-    }
-    return short
-}
+export type MergeParentCommits = [Commit, Commit]
 
 function dedup(items: string[]) : string[] {
     return [...new Set(items)].sort()
@@ -152,6 +111,9 @@ export async function extractMergeInfo(match: RegExpMatchArray) : Promise<MergeI
     const info: MergeInfo = { merge_commit, parents, source, target, base }
     return info
 }
+
+// 8e616c24b2 Merge branch 'CTRL-1497-hwio-only-write-outputs-on-change' into 'epic/dakota-develop'
+const regexMerge = /^([a-f0-9]+) Merge branch '(\S+)' into '(\S+)'$/
 
 export async function extractAncestry(block: string): Promise<MergeInfo[]> {
     const lines = block.split("\n")

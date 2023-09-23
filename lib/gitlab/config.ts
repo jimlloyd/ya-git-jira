@@ -1,4 +1,4 @@
-import { getConfig } from "../git"
+import { getConfig } from "../git/git-base"
 
 export interface GitlabConfig {
     host: string
