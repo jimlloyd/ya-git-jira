@@ -2,7 +2,7 @@
 
 import { Command } from 'commander'
 import { getPackageVersion } from '../lib/package'
-import { getAncestry } from '../lib/git'
+import { getAncestry, renderAncestry } from '../lib/git'
 import { isMain } from '../lib/is_main'
 import { renderYaml } from '../lib/json'
 const version = await getPackageVersion()
@@ -16,6 +16,7 @@ export function create(): Command {
         .action(async () => {
             const ancestry = await getAncestry()
             renderYaml(ancestry)
+            renderAncestry(ancestry)
         })
     return program
 }

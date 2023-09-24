@@ -1,5 +1,7 @@
 import { CommitHash, isHash, shortHash } from './git-hash'
 import { doCommand } from '../spawn'
+import { DiGraph, VertexDefinition } from "digraph-js";
+import { stringTag } from 'yaml/util';
 
 export type Commit = {
     hash: CommitHash
@@ -79,6 +81,11 @@ export type MergeInfo = {
     source: string      // this is generally a topic branch. We should be able to infer issue id from it
     target: string      // this is generally an epic or main branch
     base: Commit        // this should be an earlier commit on the target (epic) branch
+
+    // parent0 is on the target branch  (epic)
+    // parent1 is on the source branch  (topic)
+    // the base commit is an earlier HEAD of the target branch
+    // the merge commit is the new HEAD of the target branch
 }
 
 export async function getMergeParents(merge_commit: CommitHash): Promise<MergeParentCommits>
@@ -137,4 +144,87 @@ export async function extractAncestry(block: string): Promise<MergeInfo[]> {
 export async function getAncestry(): Promise<MergeInfo[]> {
     const block = await doCommand(['git', "log", "--min-parents=2", "--first-parent", "--oneline", "--max-count=30", "HEAD"])
     return extractAncestry(block)
+}
+
+export type Vertex = VertexDefinition<MergeInfo>
+export type Graph = DiGraph<Vertex>
+
+export function renderAncestry(ancestry: MergeInfo[]) {
+
+    const graph = new DiGraph<Vertex>()
+
+    // Create all vertices and add links to the parent comments of the merge
+    ancestry.forEach(info => {
+        const id = info.merge_commit.hash
+        const vertex: Vertex = {id: id, body: info, adjacentTo: []}
+        graph.addVertex(vertex)
+    })
+
+    // Now that all verticies have been created, fill in the links
+    // Links we need to add for each MergeInfo
+    // base -> parent0
+    // base -> parent1
+    // parent0 -> merge_commit.hash
+    // parent1 -> merge_commit.hash
+
+    ancestry.forEach(info => {
+        const base = info.base.hash
+        const parent0 = info.parents[0].hash
+        const parent1 = info.parents[1].hash
+        const merge_commit = info.merge_commit.hash
+        graph.addEdge({from: base, to: parent0})
+        graph.addEdge({from: base, to: parent1})
+        graph.addEdge({from: parent0, to: merge_commit})
+        graph.addEdge({from: parent1, to: merge_commit})
+    })
+
+    const last = ancestry[ancestry.length-1]
+    const main = last.target
+    const branches = [ main ]
+    let current = main;
+
+    function renderCommit(hash: string) {
+        console.log(`  commit id: "${hash}"`)
+    }
+
+    function renderBranch(branch: string) {
+        console.log(`  branch ${branch}`)
+    }
+
+    function renderCheckout(branch: string) {
+        console.log(`  checkout ${branch}`)
+    }
+
+    function addCommit(branch: string, hash: string): void {
+        if (branch != current) {
+            current = branch
+            if (branches.includes(current)) {
+                renderCheckout(current)
+            } else {
+                renderBranch(current)
+                branches.push(current)
+            }
+        }
+        renderCommit(hash)
+    }
+
+    function renderMerge(source: string, target: string) {
+        if (current != target) {
+            renderCheckout(target)
+            current = target
+        }
+        console.log(`  merge ${source}`)
+    }
+
+    console.log(`%%{init: { 'gitGraph': {'mainBranchName': ${main}}} }%%`)
+    console.log("gitGraph TB:")
+    renderBranch(main)
+    renderCommit(last.merge_commit.hash)
+    for(const vertex of graph.traverse({ traversal: "dfs", rootVertexId: last.merge_commit.hash })) {
+        const mergeInfo = vertex.body
+        addCommit(mergeInfo.target, mergeInfo.parents[0].hash)
+        addCommit(mergeInfo.source, mergeInfo.parents[1].hash)
+        renderMerge(mergeInfo.source, mergeInfo.target)
+    }
+
 }
