@@ -146,8 +146,14 @@ export async function getAncestry(): Promise<MergeInfo[]> {
     return extractAncestry(block)
 }
 
+function isTopicBranch(branch: string): boolean {
+    return !!branch.match(/^[A-Z]+-\d+-/)
+}
+
 export type Vertex = VertexDefinition<MergeInfo>
 export type Graph = DiGraph<Vertex>
+
+type GraphCommitType = 'NORMAL' | 'HIGHLIGHT' | 'REVERSE'
 
 export function renderAncestry(ancestry: MergeInfo[]) {
 
@@ -183,8 +189,11 @@ export function renderAncestry(ancestry: MergeInfo[]) {
     const branches = [ main ]
     let current = main;
 
-    function renderCommit(hash: string) {
-        console.log(`  commit id: "${hash}"`)
+    function renderCommit(commit: Commit, type?: GraphCommitType) {
+        const { hash, tags } = commit
+        let typeStr = !!type ? ` type: ${type}` : ''
+        let tagStr = !!tags ? ` tag: "${tags[0]}"` : ''
+        console.log(`  commit id: "${hash}"${typeStr}${tagStr}`)
     }
 
     function renderBranch(branch: string) {
@@ -195,7 +204,7 @@ export function renderAncestry(ancestry: MergeInfo[]) {
         console.log(`  checkout ${branch}`)
     }
 
-    function addCommit(branch: string, hash: string): void {
+    function addCommit(branch: string, commit: Commit, type?: GraphCommitType): void {
         if (branch != current) {
             current = branch
             if (branches.includes(current)) {
@@ -205,7 +214,7 @@ export function renderAncestry(ancestry: MergeInfo[]) {
                 branches.push(current)
             }
         }
-        renderCommit(hash)
+        renderCommit(commit, type)
     }
 
     function renderMerge(source: string, target: string) {
@@ -216,15 +225,27 @@ export function renderAncestry(ancestry: MergeInfo[]) {
         console.log(`  merge ${source}`)
     }
 
-    console.log(`%%{init: { 'gitGraph': {'mainBranchName': ${main}}} }%%`)
-    console.log("gitGraph TB:")
-    renderBranch(main)
-    renderCommit(last.merge_commit.hash)
+    function renderTopicMerge(source: string) {
+        console.log(`  commit id: "${source}" type: HIGHLIGHT`)
+    }
+
+    // We add a commit when we first see it referenced which is before we are
+    // processing the vertex that has  the MergeInfo
+
+    console.log(`%%{init: { 'gitGraph': {'rotateCommitLabel': false, 'mainBranchName: "${main}"}} }%%`)
+    console.log("gitGraph LR:")
+    renderCommit(last.merge_commit)
     for(const vertex of graph.traverse({ traversal: "dfs", rootVertexId: last.merge_commit.hash })) {
         const mergeInfo = vertex.body
-        addCommit(mergeInfo.target, mergeInfo.parents[0].hash)
-        addCommit(mergeInfo.source, mergeInfo.parents[1].hash)
-        renderMerge(mergeInfo.source, mergeInfo.target)
+        const { source, target, parents } = mergeInfo
+        addCommit(target, parents[0])
+        if (isTopicBranch(source)) {
+            renderTopicMerge(source)
+        } else
+        {
+            addCommit(source, parents[1])
+            renderMerge(source, target)
+        }
     }
 
 }
