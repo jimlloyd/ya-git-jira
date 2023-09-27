@@ -5,6 +5,7 @@ import { getPackageVersion } from '../lib/package'
 import { isMain } from '../lib/is_main'
 import todo from './git-lab-merge-todo'
 import active from './git-lab-merge-active'
+import history from './git-lab-merge-history'
 import train from './git-lab-merge-train'
 
 const version = await getPackageVersion()
@@ -16,6 +17,7 @@ export function create(): Command {
         .name('merge')
         .description('Commands for working with GitLab merge requests')
         .addCommand(active())
+        .addCommand(history())
         .addCommand(todo())
         .addCommand(train())
         .action(() => program.help())

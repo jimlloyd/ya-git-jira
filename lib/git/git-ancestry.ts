@@ -2,6 +2,7 @@ import { CommitHash, isHash, shortHash } from './git-hash'
 import { doCommand } from '../spawn'
 import { DiGraph, VertexDefinition } from "digraph-js";
 import { stringTag } from 'yaml/util';
+import { JSONValue } from '../json';
 
 export type Commit = {
     hash: CommitHash
@@ -247,5 +248,38 @@ export function renderAncestry(ancestry: MergeInfo[]) {
             renderMerge(source, target)
         }
     }
+}
 
+export type MergeData =  {
+    date: Date,
+    source: string,
+    target: string
+    extra: string[]
+}
+
+export async function getMergeHistory(commitish: string, N: number = 30): Promise<MergeData[]>
+{
+    const text = await doCommand([`git`, `log`, `--format=%cs %s %D`, `--min-parents=2`, `--first-parent`, `--max-count=${N}`, commitish])
+    // 2023-09-11 Merge branch 'CTRL-2178-remove-cont-pwr-telemetry-signals-for-dakota-v26-28' into 'release/v26'
+    const lines = text.split('\n')
+    const regex = /^(\d+-\d+-\d+)\sMerge.+branch\s'([\S]+)'\sinto\s('([^'\s]+)'|([^'\s]+))(.*)$/
+    const data: MergeData[] = lines.map(line => {
+        const match = line.match(regex)
+        if (!match) {
+            return { date: new Date(), source: 'badparse', target: '', extra: [line] }
+        } else {
+            const target = match[4] || match[5]
+            let [ d, source, xtra ] = [match[1], match[2], match[6]]
+            xtra = xtra.trim()
+            const extra = xtra.length==0 ? [] : xtra.split(',').map(s => {
+                s = s.trim()
+                s = s.replace('tag: ', '')
+                return s
+            })
+            const date: Date = new Date(d)
+            return { date, source, target, extra }
+        }
+    })
+
+    return data
 }
