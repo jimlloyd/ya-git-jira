@@ -28,7 +28,7 @@ export function create(): Command {
                 process.exit(1)
             }
             const branch = await getCurrentBranch()
-            const ancestry = await getAncestry(3)
+            const ancestry = await getAncestry()
             if (options.verbose) {
                 renderYaml({project, ancestry})
             } else {
