@@ -28,6 +28,7 @@
     "git-lab-project-whereami": "dist/bin/git-lab-project-whereami.js",
     "git-lab-project": "dist/bin/git-lab-project.js",
     "git-lab-whoami": "dist/bin/git-lab-whoami.js",
+    "git-lab-youarehere": "dist/bin/git-lab--youarehere.js",
     "git-lab": "dist/bin/git-lab.js",
     "gitj": "dist/bin/gitj.js"
   },

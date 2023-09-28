@@ -262,7 +262,8 @@ export async function getMergeHistory(commitish: string, N: number = 30): Promis
     const text = await doCommand([`git`, `log`, `--format=%cs %s %D`, `--min-parents=2`, `--first-parent`, `--max-count=${N}`, commitish])
     // 2023-09-11 Merge branch 'CTRL-2178-remove-cont-pwr-telemetry-signals-for-dakota-v26-28' into 'release/v26'
     const lines = text.split('\n')
-    const regex = /^(\d+-\d+-\d+)\sMerge.+branch\s'([\S]+)'\sinto\s('([^'\s]+)'|([^'\s]+))(.*)$/
+    console.log(`branch: ${commitish} merges: ${lines.length}`)
+    const regex = /^(\d+-\d+-\d+)\sMerge.+\s'([\S]+)'\sinto\s('([^'\s]+)'|([^'\s]+))(.*)$/
     const data: MergeData[] = lines.map(line => {
         const match = line.match(regex)
         if (!match) {
@@ -282,4 +283,43 @@ export async function getMergeHistory(commitish: string, N: number = 30): Promis
     })
 
     return data
+}
+
+export async function getEpicBranches(): Promise<string[]> {
+    // hard-coded for now. TODO: dynamically lookup and filter
+    const epicBranches = [
+        'release/v24',
+        'release/v25',
+        'release/v26',
+        'release/v27',
+        'epic/dakota-develop',
+        'epic/corsair-core-controller',
+        'epic/dakota-corsair-app',
+        'epic/dakota-develop',
+        'epic/dakota-develop-pre-v23',
+        'epic/dakota-load-share',
+        'epic/dakota-load-share-2',
+        'epic/dakota-site-interface',
+    ]
+    return Promise.resolve(epicBranches);
+}
+
+export async function extractFullMergeHistory(): Promise<MergeData[]>
+{
+
+    const epicBranches = await getEpicBranches();
+    const all: Set<MergeData> = new Set()
+    const promises = epicBranches.map(async epic => {
+        const branch = `origin/${epic}`
+        const history: MergeData[] = await getMergeHistory(branch, 2000)
+        // console.log(`${branch}: items:${history.length}`)
+        history.forEach(item => {
+            all.add(item)
+        })
+    })
+    await Promise.all(promises)
+    // console.log(`Set Accumulated size: ${all.size}`)
+    const unique: MergeData[] = [ ...all ]
+    // console.log(`Array size: ${unique.length}`)
+    return unique
 }

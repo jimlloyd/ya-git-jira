@@ -8,6 +8,7 @@ import merges from './git-lab-merge'
 import namespace from './git-lab-namespace'
 import project from './git-lab-project'
 import whoami from './git-lab-whoami'
+import youarehere from './git-lab-youarehere'
 const version = await getPackageVersion()
 
 export function create(): Command {
@@ -21,6 +22,7 @@ export function create(): Command {
         .addCommand(namespace())
         .addCommand(project())
         .addCommand(whoami())
+        .addCommand(youarehere())
         .action(() => program.help())
     return program
 }
