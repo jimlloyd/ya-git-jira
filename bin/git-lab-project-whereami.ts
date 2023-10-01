@@ -3,9 +3,9 @@
 import { Command } from 'commander'
 import { getPackageVersion } from '../lib/package'
 import { findProject } from "../lib/gitlab/project"
-import { getAncestry, getCurrentBranch, getRemote } from '../lib/git'
+import { getMergeHistory, getCurrentBranch, getRemote } from '../lib/git'
 import { isMain } from '../lib/is_main'
-import { renderYaml } from '../lib/json'
+import { JSONValue, renderYaml } from '../lib/json'
 
 const version = await getPackageVersion()
 
@@ -28,7 +28,7 @@ export function create(): Command {
                 process.exit(1)
             }
             const branch = await getCurrentBranch()
-            const ancestry = await getAncestry()
+            const ancestry = await getMergeHistory(branch) as JSONValue
             if (options.verbose) {
                 renderYaml({project, ancestry})
             } else {

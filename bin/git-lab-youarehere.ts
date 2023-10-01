@@ -3,8 +3,7 @@
 import { Command } from 'commander'
 import { getPackageVersion } from '../lib/package'
 import { isMain } from '../lib/is_main'
-import { JSONValue, renderYaml } from '../lib/json'
-import { MergeData, extractFullMergeHistory } from '../lib/git/git-ancestry'
+import { MergeData, extractFullMergeHistory, renderGitGraph } from '../lib/git/git-ancestry'
 const version = await getPackageVersion()
 
 export function create(): Command {
@@ -15,8 +14,7 @@ export function create(): Command {
         .description('Show an overview of all release & epic branches')
         .action(async () => {
             const all: MergeData[] = await extractFullMergeHistory()
-            renderYaml(all as unknown as JSONValue)
-            console.log(`Total ${all.length} merge commits`)
+            renderGitGraph(all)
         })
     return program
 }
