@@ -52,6 +52,7 @@
     "debug": "^4.3.4",
     "digraph-js": "^2.2.3",
     "glob": "^10.3.4",
+    "mermaid": "^10.4.0",
     "yaml": "^2.3.2"
   },
   "main": "dist/start.js dist/bump.js",

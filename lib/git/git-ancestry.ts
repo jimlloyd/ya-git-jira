@@ -8,6 +8,10 @@ import { MergeCommit } from '../merge-graph'
 import { getBranchType } from './commit-type';
 import { isExternal } from 'util/types';
 
+import mermaid from "mermaid";
+import { Writable } from 'node:stream';
+
+
 export type Commit = {
     hash: CommitHash
     branches?: string[]
@@ -346,30 +350,42 @@ function normalize(branch_name: string) : string
     return branch_name.replace(/^origin\//, "")
 }
 
-export function renderGitGraph(merge_commits: MergeData[]): void
-{
-    const main = merge_commits[0].target
-    console.log(`%%{init: { 'gitGraph': {'rotateCommitLabel': false, 'mainBranchName': '${main}'}} }%%`)
-    console.log(`gitGraph LR:`)
 
+
+export function renderGitGraph(merge_commits: MergeData[]): string
+{
+    const chunks: string[] = []
+    const main = merge_commits[0].target
     let current: string = ""
     let branches: string[] = [main]
 
+    function write(s: string) {
+        chunks.push(s)
+    }
+
+    write(`---`)
+    write(`config:`)
+    write(`  gitGraph:`)
+    write(`     rotateCommitLabel: true`)
+    write(`     mainBranchName: "${main}"`)
+    write(`---`)
+    write(`gitGraph LR:`)
+
     function renderBranch(branch: string) {
-        console.log(`  branch ${branch}`)
+        write(`  branch ${branch}`)
     }
 
     function renderCheckout(branch: string) {
-        console.log(`  checkout ${branch}`)
+        write(`  checkout ${branch}`)
     }
 
     function renderCommit(id: string, tag?: string) {
-        const match = id.match(/^([A-Z]+-)?(\d+)-/)
-        const name = match && match.length >= 3 ? match[2] : id
+        const match = id.match(/^(([A-Z]+-)?(\d+))-/)
+        const name = match && match.length >= 3 ? match[1] : id
         if (tag) {
-            console.log(`  commit id: "${name}" tag: "${tag}"`)
+            write(`  commit id: "${name}" tag: "${tag}"`)
         } else {
-            console.log(`  commit id: "${name}"`)
+            write(`  commit id: "${name}"`)
         }
     }
 
@@ -393,4 +409,7 @@ export function renderGitGraph(merge_commits: MergeData[]): void
     }
 
     merge_commits.forEach(merge_data => renderMergeCommit(merge_data))
+
+    const result = chunks.join('\n')
+    return result
 }
