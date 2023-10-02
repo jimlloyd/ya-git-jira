@@ -33,3 +33,7 @@ export function getBranchType(name: string): BranchType {
     console.error(`getBranchType(${name}) called with unknown branch type`)
     return 'unknown'
 }
+
+export function isEpicOrRelease(branch: string): boolean {
+    return ['epic', 'release'].includes(getBranchType(branch))
+}
