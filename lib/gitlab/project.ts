@@ -4,7 +4,7 @@ import { gitlabApi } from "./api"
 import { type JSONValue } from "../json"
 import path from 'node:path'
 import { dlog } from "./dlog"
-
+import { MergeRequest } from "./merge-request"
 export type Project = JSONValue & {
     id: number
     name: string
@@ -75,4 +75,9 @@ export async function projectScopedGet(endpoint: string): Promise<JSONValue> {
     const request = new Request(uri, options)
     const response = await fetch(request)
     return await response.json()
+}
+
+export async function getPendingMergeRequests() : Promise<Array<MergeRequest>>
+{
+    return await projectScopedGet(`merge_requests?state=opened`) as Array<MergeRequest>
 }
