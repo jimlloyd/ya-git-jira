@@ -317,15 +317,22 @@ export async function getEpicBranches(): Promise<string[]> {
     return Promise.resolve(epicBranches);
 }
 
-export async function extractFullMergeHistory(): Promise<MergeData[]>
+export type FullHistoryOptions = {
+    days?: number,
+    commits?: number,
+    pending?: boolean,
+}
+
+export async function extractFullMergeHistory(options: FullHistoryOptions): Promise<MergeData[]>
 {
-    let cutoff = dayjs().subtract(3, 'month')
+    const { days, commits, pending } = options
+    let cutoff = dayjs().subtract(days || 30, 'day')
     const epicBranches = await getEpicBranches();
     const addedCommits: Set<string> = new Set()
     const unique: MergeData[] = []
     const promises = epicBranches.map(async epic => {
         const branch = `origin/${epic}`
-        const history: MergeData[] = await getMergeHistory(branch, 50)
+        const history: MergeData[] = await getMergeHistory(branch, commits || 50)
         history.forEach(item => {
             const { commit } = item
             if (addedCommits.has(commit)) {
