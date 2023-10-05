@@ -49,6 +49,7 @@
     "commander": "^11.0.0",
     "cuid": "^3.0.0",
     "dayjs": "^1.11.10",
+    "dayjs-with-plugins": "^1.0.3",
     "debug": "^4.3.4",
     "digraph-js": "^2.2.3",
     "glob": "^10.3.4",
