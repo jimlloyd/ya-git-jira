@@ -29,8 +29,11 @@ export async function spawn(args: string[], options: SpawnOptions = defaultOptio
     return { out: out.trim(), err: err.trim(), code }
 }
 
-export async function doCommand(args: string[], options: SpawnOptions = defaultOptions): Promise<string> {
+export type ArgsOrString = string | string[]
+
+export async function doCommand(args: ArgsOrString, options: SpawnOptions = defaultOptions): Promise<string> {
+    if (typeof args === "string") args = args.split(" ")
     const { out, err } = await spawn(args, options)
-    if (err) console.error(err)
+    if (err) console.error(`Error: ${err} while running ${args.join(" ")}`)
     return out
 }
