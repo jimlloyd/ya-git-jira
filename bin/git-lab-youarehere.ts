@@ -22,7 +22,7 @@ export function create(): Command {
         .description('Serve a web page with a git graph of release & epic branches')
         .action(async () => {
             const all: MergeData[] = await extractFullMergeHistory();
-            const graph: string = renderGitGraph(all);
+            const graph: string = await renderGitGraph(all);
             const body: string = [preamble, graph, postamble].join("\n");
             const hostname = 'localhost'
             const server = Bun.serve({

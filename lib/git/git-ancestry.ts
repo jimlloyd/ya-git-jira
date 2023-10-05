@@ -1,263 +1,19 @@
-import { CommitHash, isHash, shortHash } from './git-hash'
+import { CommitHash } from './git-hash'
 import { doCommand } from '../spawn'
-import { DiGraph, VertexDefinition } from "digraph-js";
 import dayjs from 'dayjs';
-import type { Dayjs } from 'dayjs';
-
+import weekOfYear from 'dayjs/plugin/weekOfYear'
+import { Dayjs } from 'dayjs';
 import { MergeCommit } from '../merge-graph'
-import { getBranchType } from './commit-type';
-import { isExternal } from 'util/types';
+import { getBranchType, isEpicOrRelease } from './commit-type';
+import { mergeBase } from './git-base';
 
-import mermaid from "mermaid";
-import { Writable } from 'node:stream';
-
+dayjs.extend(weekOfYear)
 
 export type Commit = {
     hash: CommitHash
     branches?: string[]
     tags?: string[]
 }
-
-// export type MergeParentCommits = [Commit, Commit]
-
-// function dedup(items: string[]) : string[] {
-//     return [...new Set(items)].sort()
-// }
-
-// function branchNameFromRef(ref: string): string {
-//     const refParts = ref.split('/');
-//     let name = refParts.pop() as string
-//     const before = refParts.pop()
-//     if (before == 'epic' || before=='release')
-//         name = `${before}/${name}`
-//     return name
-// }
-
-// function tagNameFromRef(ref: string): string {
-//     const refParts = ref.split('/');
-//     const name = refParts.pop() as string
-//     return name
-// }
-
-// export async function asCommit(hash: string): Promise<Commit>
-// {
-//     if (!isHash(hash))
-//     {
-//         console.error('asCommit() called on non-hash string:', hash)
-//         process.exit(1)
-//     }
-//     let branches: string[] = []
-//     let tags: string[] = []
-//     const refs = await doCommand([`git`, `for-each-ref`, `--points-at=${hash}`], { expectQuiet: true})
-//     if (refs) {
-//         const lines = refs.split('\n')
-//         lines.forEach(line => {
-//             const lineParts = line.split(/\s+/)
-//             if (lineParts.length != 3) {
-//                 console.error('for-each-ref line should have 3 parts:', { line, lineParts })
-//                 process.exit(1)
-//             }
-//             const [_, kind, ref] = lineParts
-//             if (!kind || !ref) {
-//                 console.error('unrecognized for-each-ref line:', { refs, lines, line, kind, ref})
-//                 process.exit(1)
-//             }
-//             if (kind == 'tag') {
-//                 tags.push(tagNameFromRef(ref))
-//             } else if (kind == 'commit') {
-//                 branches.push(branchNameFromRef(ref))
-//             } else {
-//                 console.error('Unrecognized ref kind:', kind)
-//                 process.exit(1)
-//             }
-//         })
-//     }
-//     const result: Commit = {
-//         hash: await shortHash(hash),
-//     }
-//     if (branches.length > 0) {
-//         result.branches = dedup(branches)
-//     }
-//     if (tags.length > 0) {
-//         result.tags = dedup(tags)
-//     }
-//     return result
-// }
-
-// export type MergeInfo = {
-//     merge_commit: Commit        // this is the resulting merge commit
-//     parents: MergeParentCommits // This must be exactly two commits because we never do octopus commits (right?)
-//     source: string      // this is generally a topic branch. We should be able to infer issue id from it
-//     target: string      // this is generally an epic or main branch
-//     base: Commit        // this should be an earlier commit on the target (epic) branch
-
-//     // parent0 is on the target branch  (epic)
-//     // parent1 is on the source branch  (topic)
-//     // the base commit is an earlier HEAD of the target branch
-//     // the merge commit is the new HEAD of the target branch
-// }
-
-// export async function getMergeParents(merge_commit: CommitHash): Promise<MergeParentCommits>
-// {
-//     const result: string = (await doCommand([`git`, `rev-list`, `--parents`, `-n`, `1`, merge_commit]))
-//     const parts = result.split(' ')
-//     if (parts.length != 3) {
-//         console.error("Merge parents not valid:", result, parts)
-//     }
-//     const [_, parent1, parent2] = parts;
-//     if (!isHash(parent1) || !isHash(parent2)) {
-//         console.warn("rev-list --parents gave weird result:", { result, parent1, parent2})
-//     }
-//     return [await asCommit(parent1), await asCommit(parent2)];
-// }
-
-// export async function getMergeBase(parents: MergeParentCommits) : Promise<CommitHash>
-// {
-//     const base = await doCommand([`git`, `merge-base`, parents[0].hash, parents[1].hash])
-//     return await shortHash(base)
-// }
-
-// export async function extractMergeInfo(match: RegExpMatchArray) : Promise<MergeInfo>
-// {
-//     const [_, merge_commit_, source, target] = match
-//     const merge_commit = await asCommit(merge_commit_)
-//     const parents: MergeParentCommits = await getMergeParents(merge_commit_)
-//     const base_: CommitHash = await getMergeBase(parents)
-//     const base = await asCommit(base_)
-
-//     const info: MergeInfo = { merge_commit, parents, source, target, base }
-//     return info
-// }
-
-// // 8e616c24b2 Merge branch 'CTRL-1497-hwio-only-write-outputs-on-change' into 'epic/dakota-develop'
-// const regexMerge = /^([a-f0-9]+) Merge branch '(\S+)' into '(\S+)'$/
-
-// export async function extractAncestry(block: string): Promise<MergeInfo[]> {
-//     const lines = block.split("\n")
-//     const ancestry: MergeInfo[] = []
-//     for (const line of lines) {
-//         const match = line.match(regexMerge)
-//         if (match) {
-//             const info = await extractMergeInfo(match)
-//             ancestry.push(info)
-//         }
-//     }
-
-//     const tagIndex = ancestry.findIndex(mergeInfo => !!mergeInfo.merge_commit.tags)
-//     if (tagIndex === -1) {
-//         console.warn('No tags found in ancestry!')
-//         return ancestry
-//     }
-//     return ancestry.slice(0, tagIndex+1)
-// }
-
-// export async function getAncestry(): Promise<MergeInfo[]> {
-//     const block = await doCommand(['git', "log", "--min-parents=2", "--first-parent", "--oneline", "--max-count=30", "HEAD"])
-//     return extractAncestry(block)
-// }
-
-// function isTopicBranch(branch: string): boolean {
-//     return !!branch.match(/^[A-Z]+-\d+-/)
-// }
-
-// export type Vertex = VertexDefinition<MergeInfo>
-// export type Graph = DiGraph<Vertex>
-
-// type GraphCommitType = 'NORMAL' | 'HIGHLIGHT' | 'REVERSE'
-
-// export function renderAncestry(ancestry: MergeInfo[]) {
-
-//     const graph = new DiGraph<Vertex>()
-
-//     // Create all vertices and add links to the parent comments of the merge
-//     ancestry.forEach(info => {
-//         const id = info.merge_commit.hash
-//         const vertex: Vertex = {id: id, body: info, adjacentTo: []}
-//         graph.addVertex(vertex)
-//     })
-
-//     // Now that all verticies have been created, fill in the links
-//     // Links we need to add for each MergeInfo
-//     // base -> parent0
-//     // base -> parent1
-//     // parent0 -> merge_commit.hash
-//     // parent1 -> merge_commit.hash
-
-//     ancestry.forEach(info => {
-//         const base = info.base.hash
-//         const parent0 = info.parents[0].hash
-//         const parent1 = info.parents[1].hash
-//         const merge_commit = info.merge_commit.hash
-//         graph.addEdge({from: base, to: parent0})
-//         graph.addEdge({from: base, to: parent1})
-//         graph.addEdge({from: parent0, to: merge_commit})
-//         graph.addEdge({from: parent1, to: merge_commit})
-//     })
-
-//     const last = ancestry[ancestry.length-1]
-//     const main = last.target
-//     const branches = [ main ]
-//     let current = main;
-
-//     function renderCommit(commit: Commit, type?: GraphCommitType) {
-//         const { hash, tags } = commit
-//         let typeStr = !!type ? ` type: ${type}` : ''
-//         let tagStr = !!tags ? ` tag: "${tags[0]}"` : ''
-//         console.log(`  commit id: "${hash}"${typeStr}${tagStr}`)
-//     }
-
-//     function renderBranch(branch: string) {
-//         console.log(`  branch ${branch}`)
-//     }
-
-//     function renderCheckout(branch: string) {
-//         console.log(`  checkout ${branch}`)
-//     }
-
-//     function addCommit(branch: string, commit: Commit, type?: GraphCommitType): void {
-//         if (branch != current) {
-//             current = branch
-//             if (branches.includes(current)) {
-//                 renderCheckout(current)
-//             } else {
-//                 renderBranch(current)
-//                 branches.push(current)
-//             }
-//         }
-//         renderCommit(commit, type)
-//     }
-
-//     function renderMerge(source: string, target: string) {
-//         if (current != target) {
-//             renderCheckout(target)
-//             current = target
-//         }
-//         console.log(`  merge ${source}`)
-//     }
-
-//     function renderTopicMerge(source: string) {
-//         console.log(`  commit id: "${source}" type: HIGHLIGHT`)
-//     }
-
-//     // We add a commit when we first see it referenced which is before we are
-//     // processing the vertex that has  the MergeInfo
-
-//     console.log(`%%{init: { 'gitGraph': {'rotateCommitLabel': false, 'mainBranchName: "${main}"}} }%%`)
-//     console.log("gitGraph LR:")
-//     renderCommit(last.merge_commit)
-//     for(const vertex of graph.traverse({ traversal: "dfs", rootVertexId: last.merge_commit.hash })) {
-//         const mergeInfo = vertex.body
-//         const { source, target, parents } = mergeInfo
-//         addCommit(target, parents[0])
-//         if (isTopicBranch(source)) {
-//             renderTopicMerge(source)
-//         } else
-//         {
-//             addCommit(source, parents[1])
-//             renderMerge(source, target)
-//         }
-//     }
-// }
 
 export type MergeData = MergeCommit & {
     date: Dayjs,
@@ -323,10 +79,10 @@ export type FullHistoryOptions = {
     pending?: boolean,
 }
 
-export async function extractFullMergeHistory(options: FullHistoryOptions): Promise<MergeData[]>
+export async function extractFullMergeHistory(options: FullHistoryOptions = {}): Promise<MergeData[]>
 {
-    const { days, commits, pending } = options
-    let cutoff = dayjs().subtract(days || 30, 'day')
+    const { days, commits } = options
+    let cutoff = dayjs().subtract(days || 90, 'day')
     const epicBranches = await getEpicBranches();
     const addedCommits: Set<string> = new Set()
     const unique: MergeData[] = []
@@ -357,15 +113,49 @@ function normalize(branch_name: string) : string
     return branch_name.replace(/^origin\//, "")
 }
 
-
-
-export function renderGitGraph(merge_commits: MergeData[]): string
+function orderedTargets(merge_commits: MergeData[]): string[]
 {
-    const chunks: string[] = []
-    const main = merge_commits[0].target
-    let current: string = ""
-    let branches: string[] = [main]
+    let d = dayjs(0)
+    const targets = new Set<string>()
+    merge_commits.forEach(merge_commit => {
+        const { source, target, date } = merge_commit
+        if (date.isAfter(d)) {
+            d = date
+        } else {
+            console.error('Dates out of order!', { date, d })
+            process.exit(1)
+        }
+        targets.add(target)
+        if (isEpicOrRelease(source)) {
+            targets.add(source)
+        }
+    })
+    const ordered_targets = Array.from(targets).sort()
+    return ordered_targets
+}
 
+function weekMarkers(merge_commits: MergeData[]): string[]
+{
+    const markers = new Set<string>()
+    merge_commits.forEach(merge_commit => {
+        const { date } = merge_commit
+        const week = date.startOf('week')
+        markers.add(week.format('YYYY-MM-DD'))
+    })
+    const ordered = Array.from(markers).sort()
+    return ordered
+}
+
+type BranchMergeBases = Record<string, string>
+type BranchMergeBasesMap = Record<string, BranchMergeBases>
+
+export async function renderGitGraph(merge_commits: MergeData[]): Promise<string>
+{
+    const ordered_targets = orderedTargets(merge_commits)
+    const markers: string[] = weekMarkers(merge_commits)
+    markers.forEach(marker => console.log(marker))
+
+    const chunks: string[] = []
     function write(s: string) {
         chunks.push(s)
     }
@@ -374,21 +164,33 @@ export function renderGitGraph(merge_commits: MergeData[]): string
     write(`config:`)
     write(`  gitGraph:`)
     write(`     rotateCommitLabel: true`)
-    write(`     mainBranchName: "${main}"`)
+    write(`     mainBranchName: "date"`)
     write(`---`)
     write(`gitGraph LR:`)
 
-    function renderBranch(branch: string) {
-        write(`  branch ${branch}`)
+    for (let i = 0; i < ordered_targets.length; i++) {
+        write(`  branch ${ordered_targets[i]} order: ${i+1}`)
     }
 
+    let current: string = ""
     function renderCheckout(branch: string) {
-        write(`  checkout ${branch}`)
+        if (branch != current) {
+            current = branch
+            write(`  checkout ${branch}`)
+        }
     }
 
-    function renderCommit(id: string, tag?: string) {
+    const branchMergeBasesMap : BranchMergeBasesMap = {}
+    const seen: Set<string> = new Set()
+
+    function renderCommit(id: string, commit: string, tag?: string) {
         const match = id.match(/^(([A-Z]+-)?(\d+))-/)
-        const name = match && match.length >= 3 ? match[1] : id
+        let name = match && match.length >= 3 ? match[1] : id
+        if (seen.has(name)) {
+            name = `${name}-${commit}`
+        } else {
+            seen.add(name)
+        }
         if (tag) {
             write(`  commit id: "${name}" tag: "${tag}"`)
         } else {
@@ -396,26 +198,75 @@ export function renderGitGraph(merge_commits: MergeData[]): string
         }
     }
 
-    function renderMergeCommit(merge_commit: MergeData): void {
-        let { source, target, extra } = merge_commit
-        source = normalize(source)
-        target = normalize(target)
+    // We have to maintain our own concept of the HEAD commit in each branch.
+    // The HEAD commit for a branch is unknown until we've seen a MergeData with that branch as the target.
+    // We can't compute the distance between two epic branches until have the HEAD commit for both.
+
+    type Heads = Record<string, string>
+    const heads: Heads = {}
+
+    async function renderMergeCommit(merge_commit: MergeData): Promise<void> {
+        let { commit, source, target, extra } = merge_commit
+        source = normalize(source)  // generally a topic branch
+        target = normalize(target)  // generally a release or epic branch
+
+        heads[target] = commit
+
+        const mergeBases = branchMergeBasesMap[target] || {}
+        branchMergeBasesMap[target] = mergeBases
+        const promises = ordered_targets.map(async t => {
+            if (t == target || heads[t]==undefined)
+            {}
+            else {
+                const base: string = await mergeBase(commit, heads[t])
+                if (mergeBases[t] == undefined ) {
+                    mergeBases[t] = base
+                }
+                else if (mergeBases[t] != base) {
+                    mergeBases[t] = base
+                    renderCheckout(t)
+                    renderCommit(source, commit)
+                    // write(`  commit id: "${source}"`)
+                    renderCheckout(target)
+                    write(`  merge "${t}"`)
+                }
+            }
+        })
+        await Promise.all(promises)
 
         const tag = extra.find(s => !!s.match(/^v\d+\./))
 
-        if (target != current) {
-            current = target
-            if (branches.includes(current)) {
-                renderCheckout(current)
-            } else {
-                renderBranch(current)
-                branches.push(current)
-            }
-        }
-        renderCommit(source, tag)
+        renderCheckout(target)
+        renderCommit(source, commit, tag)
     }
 
-    merge_commits.forEach(merge_data => renderMergeCommit(merge_data))
+    let marker = markers.shift()
+    if (marker) {
+        renderCheckout('date')
+        write(`  commit tag: "${marker}"`)
+    }
+
+    function doAll(merge_data: MergeData[]) : Promise<void> {
+        let p = Promise.resolve();
+        merge_data.forEach((mergeInfo: MergeData) => {
+            p = p.then(async () => {
+                const { date } = mergeInfo
+                if (markers.length > 0) {
+                    const next = dayjs(markers[0])
+                    if (date.isAfter(next, 'day')) {
+                        marker = markers.shift()
+                        if (marker) {
+                            renderCheckout('date')
+                            write(`  commit tag: "${marker}"`)
+                        }
+                    }
+                }
+                await renderMergeCommit(mergeInfo)
+            })
+        })
+        return p;
+    };
+    await doAll(merge_commits);
 
     const result = chunks.join('\n')
     return result
