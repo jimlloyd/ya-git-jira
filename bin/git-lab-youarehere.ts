@@ -20,8 +20,10 @@ export function create(): Command {
         .version(version)
         .name('youarehere')
         .description('Serve a web page with a git graph of release & epic branches')
-        .action(async () => {
-            const all: MergeData[] = await extractFullMergeHistory();
+        .option('-d, --days <days>', 'Number of days to include in the graph', '120')
+        .action(async (options) => {
+            const days = parseInt(options.days || '120')
+            const all: MergeData[] = await extractFullMergeHistory({ days });
             const graph: string = await renderGitGraph(all);
             const body: string = [preamble, graph, postamble].join("\n");
             const hostname = 'localhost'

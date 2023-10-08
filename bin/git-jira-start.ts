@@ -8,7 +8,7 @@ import { isMain } from '../lib/is_main'
 const version = await getPackageVersion()
 
 function toKebab(s: string): string {
-    return s.replace(/([a-z]+)([A-Z]+)/g, "$1_2").toLowerCase()
+    return s.replace(/([a-z]+)([A-Z]+)/g, "$1_$2").toLowerCase()
         .replace(/(\W+)/g, "-")
         .replace(/-$/, "")
 }

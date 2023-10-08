@@ -6,6 +6,7 @@ import { Dayjs } from 'dayjs';
 import { MergeCommit } from '../merge-graph'
 import { getBranchType, isEpicOrRelease } from './commit-type';
 import { mergeBase } from './git-base';
+import { getRemoteBranches } from '../gitlab';
 
 dayjs.extend(weekOfYear)
 
@@ -54,23 +55,11 @@ export async function getMergeHistory(commitish: string, N: number = 30): Promis
     return data
 }
 
-export async function getEpicBranches(): Promise<string[]> {
-    // hard-coded for now. TODO: dynamically lookup and filter
-    const epicBranches = [
-        'release/v24',
-        'release/v25',
-        'release/v26',
-        'release/v27',
-        'epic/dakota-develop',
-        'epic/corsair-core-controller',
-        'epic/dakota-corsair-app',
-        'epic/dakota-develop',
-        'epic/dakota-develop-pre-v23',
-        'epic/dakota-load-share',
-        'epic/dakota-load-share-2',
-        'epic/dakota-site-interface',
-    ]
-    return Promise.resolve(epicBranches);
+export async function getEpicBranches(maxAge: number): Promise<string[]> {
+    const epics = await getRemoteBranches({ search: '^epic/', maxAge })
+    const releases = await getRemoteBranches({ search: '^release/', maxAge })
+    const epicBranches = [...epics.map(b => b.name),  ...releases.map(b => b.name), 'develop'].sort()
+    return epicBranches;
 }
 
 export type FullHistoryOptions = {
@@ -83,7 +72,7 @@ export async function extractFullMergeHistory(options: FullHistoryOptions = {}):
 {
     const { days, commits } = options
     let cutoff = dayjs().subtract(days || 90, 'day')
-    const epicBranches = await getEpicBranches();
+    const epicBranches = await getEpicBranches(days || 90);
     const addedCommits: Set<string> = new Set()
     const unique: MergeData[] = []
     const promises = epicBranches.map(async epic => {

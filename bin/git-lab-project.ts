@@ -4,6 +4,7 @@ import { Command } from 'commander'
 import { getPackageVersion } from '../lib/package'
 import { isMain } from '../lib/is_main'
 import ancestry from './git-lab-project-ancestry'
+import epics from './git-lab-project-epics'
 import list from './git-lab-project-list'
 import whereami from './git-lab-project-whereami'
 const version = await getPackageVersion()
@@ -15,6 +16,7 @@ export function create(): Command {
         .name('project')
         .description('Commands for working with GitLab projects')
         .addCommand(ancestry())
+        .addCommand(epics())
         .addCommand(list())
         .addCommand(whereami())
         .action(() => {
