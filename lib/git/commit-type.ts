@@ -30,6 +30,10 @@ export function getBranchType(name: string): BranchType {
         return 'topic'
     }
 
+    if (name.startsWith('merge-back')) {
+        return 'topic'
+    }
+
     console.error(`getBranchType(${name}) called with unknown branch type`)
     return 'unknown'
 }
