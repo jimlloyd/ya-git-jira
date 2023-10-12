@@ -25,7 +25,8 @@ export function create(): Command {
             }
 
             const nextBranch = `${stem}.v${version}`
-            await createBranch(nextBranch)
+            const out = await createBranch(nextBranch)
+            console.log(out)
         })
     return program
 }

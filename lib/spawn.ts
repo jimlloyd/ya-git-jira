@@ -7,11 +7,13 @@ export interface SpawnResult {
 }
 
 export interface SpawnOptions {
-    expectQuiet?: boolean
+    expectQuiet?: boolean,
+    errorIsBenign?: boolean,
 }
 
 export const defaultOptions: SpawnOptions = {
     expectQuiet: false,
+    errorIsBenign: false,
 }
 
 export async function spawn(args: string[], options: SpawnOptions = defaultOptions): Promise<SpawnResult> {
@@ -34,6 +36,7 @@ export type ArgsOrString = string | string[]
 export async function doCommand(args: ArgsOrString, options: SpawnOptions = defaultOptions): Promise<string> {
     if (typeof args === "string") args = args.split(" ")
     const { out, err } = await spawn(args, options)
+    if (!out && err && options.errorIsBenign) return err
     if (err) console.error(`Error: ${err} while running ${args.join(" ")}`)
     return out
 }

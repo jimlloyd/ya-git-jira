@@ -6,7 +6,7 @@ export async function getConfig(key: string, options = defaultOptions): Promise<
 }
 
 export async function createBranch(name: string): Promise<string> {
-    return doCommand(`git checkout -b ${name}`)
+    return doCommand(`git checkout -b ${name}`, { errorIsBenign: true })
 }
 
 export async function getCurrentBranch(): Promise<string> {
