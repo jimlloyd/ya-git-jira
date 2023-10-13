@@ -30,7 +30,7 @@ export function getBranchType(name: string): BranchType {
         return 'topic'
     }
 
-    if (name.startsWith('merge-back')) {
+    if (name.startsWith('merge')) {
         return 'topic'
     }
 
