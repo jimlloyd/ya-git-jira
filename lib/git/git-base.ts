@@ -35,3 +35,7 @@ export async function getDistanceToCommonCommit(current: string, other: string):
     const base = await mergeBase(current, other)
     return await commitDistance(current, base)
 }
+
+export async function getDescribe(hash: string): Promise<string> {
+    return doCommand(`git describe --tags ${hash}`)
+}

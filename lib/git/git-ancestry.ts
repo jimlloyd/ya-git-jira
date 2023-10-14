@@ -5,7 +5,7 @@ import weekOfYear from 'dayjs/plugin/weekOfYear'
 import { Dayjs } from 'dayjs';
 import { MergeCommit } from '../merge-graph'
 import { getBranchType, isEpicOrRelease } from './commit-type';
-import { mergeBase } from './git-base';
+import { getDescribe, mergeBase } from './git-base';
 import { getRemoteBranches } from '../gitlab';
 import { JSONValue, renderYaml } from '../json';
 import { render } from 'mermaid/dist/dagre-wrapper/index.js';
@@ -214,17 +214,22 @@ export async function renderGitGraph(merge_commits: MergeData[]): Promise<string
     const branchMergeBasesMap : BranchMergeBasesMap = {}
     const seen: Set<string> = new Set()
 
-    function renderCommit(id: string, commit: string, tag?: string) {
-        const match = id.match(/^(([A-Z]+-)?(\d+))-/)
-        let name = match && match.length >= 3 ? match[1] : id
-        if (seen.has(`${name}-${commit}`)) {
+    async function renderCommit(id: string, commit: string, tag?: string): Promise<void> {
+        // const match = id.match(/^(([A-Z]+-)?(\d+))-/)
+        // let name = match && match.length >= 3 ? match[1] : id
+        // if (seen.has(`${name}-${commit}`)) {
+        //     return  // already rendered
+        // } else  if (seen.has(name)) {
+        //     name = `${name}-${commit}`
+        //     seen.add(name)
+        // } else {
+        //     seen.add(name)
+        // }
+        const name = await getDescribe(commit)
+        if (seen.has(name)) {
             return  // already rendered
-        } else  if (seen.has(name)) {
-            name = `${name}-${commit}`
-            seen.add(name)
-        } else {
-            seen.add(name)
         }
+        seen.add(name)
         if (tag) {
             write(`  commit id: "${name}" tag: "${tag}"`)
         } else {
@@ -259,7 +264,7 @@ export async function renderGitGraph(merge_commits: MergeData[]): Promise<string
                 else if (mergeBases[t] != base) {
                     mergeBases[t] = base
                     renderCheckout(t)
-                    renderCommit(source, commit)
+                    await renderCommit(source, commit)
                     renderCheckout(target)
                     write(`  merge ${t} id: "merge-${t}-${commit}-into-${target}"`)
                 }
@@ -270,7 +275,7 @@ export async function renderGitGraph(merge_commits: MergeData[]): Promise<string
         const tag = extra.find(s => !!s.match(/^v\d+\./))
 
         renderCheckout(target)
-        renderCommit(source, commit, tag)
+        await renderCommit(source, commit, tag)
     }
 
     let marker = markers.shift()
