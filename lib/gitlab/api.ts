@@ -11,17 +11,30 @@ function getNextLink(link: string | null): string | undefined {
     return next
 }
 
-export async function gitlabApi(endpoint: string): Promise<JSONValue> {
+export async function gitlabApi(endpoint: string, params: URLSearchParams = new URLSearchParams()): Promise<JSONValue> {
     if (endpoint.startsWith("/")) {
         console.warn(`gitlabApi: endpoint ${endpoint} starts with /, removing it`)
         endpoint = endpoint.slice(1)
     }
+
+    if (endpoint.includes('?')) {
+        const parts = endpoint.split('?')
+        console.assert(parts.length == 2, `endpoint ${endpoint} has more than one ?`)
+        let p = new URLSearchParams(parts[1])
+        for (let [key, value] of p.entries()) {
+            params.set(key, value)
+        }
+    }
+
     const method = "GET"
     const { host, token } = await getGitlabConfig()
     const base = `https://${host}/api/v4`
     const requested = 100
-    const sep = endpoint.includes('?') ? '&' : '?'
-    const uri = `${base}/${endpoint}${sep}per_page=${requested}`
+    params.set('per_page', requested.toString())
+
+    const uri = `${base}/${endpoint}?${params}`
+    console.debug(`gitlabApi: ${uri}`)
+
     const headers = new Headers()
     headers.append("Accept", "application/json")
     headers.append('Private-Token', token)

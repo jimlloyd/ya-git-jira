@@ -21,7 +21,7 @@ export async function getProjects(match: string): Promise<Array<Project>> {
         const m = encodeURIComponent(match)
         search = `&search=${m}`
     }
-    const projects = await gitlabApi(`projects?membership=true&simple=true${search}`)
+    const projects = await gitlabApi(`projects`, new URLSearchParams(`membership=true&simple=true${search}`))
     if (!projects) {
         throw new Error(`No projects!`)
     } else if (!Array.isArray(projects)) {
@@ -51,7 +51,7 @@ export async function findProject(ssh_url: string): Promise<Project | undefined>
     return project
 }
 
-export async function projectScopedGet(endpoint: string): Promise<JSONValue> {
+export async function projectScopedGet(endpoint: string, params: URLSearchParams): Promise<JSONValue> {
     if (endpoint.startsWith("/")) {
         console.warn(`gitlabApi: endpoint ${endpoint} starts with /, removing it`)
         endpoint = endpoint.slice(1)
@@ -64,12 +64,12 @@ export async function projectScopedGet(endpoint: string): Promise<JSONValue> {
     if (!endpoint.startsWith("projects/")) {
         endpoint = `projects/${project.id}/${endpoint}`
     }
-    return await gitlabApi(endpoint)
+    return await gitlabApi(endpoint, params)
 }
 
 export async function getPendingMergeRequests() : Promise<Array<MergeRequest>>
 {
-    return await projectScopedGet(`merge_requests?state=opened`) as Array<MergeRequest>
+    return await projectScopedGet(`merge_requests`, new URLSearchParams(`state=opened`)) as Array<MergeRequest>
 }
 
 export type Branch = JSONValue & {
@@ -92,8 +92,10 @@ export async function getRemoteBranches(options: GetRemoteBranchesOptions): Prom
 
     const dateLimit = dayjs().subtract(maxAge, 'day')
 
-    let args = search ? `?search=${encodeURIComponent(search)}` : ''
-    let branches = await projectScopedGet(`repository/branches${args}`) as Array<Branch>
+    let params = new URLSearchParams()
+    params.set('search', search)
+
+    let branches = await projectScopedGet(`repository/branches`, params) as Array<Branch>
 
     branches = branches
     .filter((b: Branch) => {
