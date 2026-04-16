@@ -29,7 +29,13 @@ RUN bun install --frozen-lockfile --production --ignore-scripts
 COPY build.ts index.ts tsconfig.json ./
 COPY bin/ bin/
 COPY lib/ lib/
-RUN bun run build.ts
+RUN mkdir -p target && bun run build.ts
+
+# --- Export stage ---
+# Extracts the standalone gitj binary to the host via:
+#   docker buildx build --output type=local,dest=./target --target export .
+FROM scratch AS export
+COPY --from=builder /build/target/gitj /gitj
 
 # --- Runtime stage ---
 FROM oven/bun:1-slim
