@@ -42,6 +42,10 @@
     "git-lab-project": "dist/bin/git-lab-project.js",
     "git-lab-whoami": "dist/bin/git-lab-whoami.js",
     "git-lab": "dist/bin/git-lab.js",
+    "git-hub-pr-list": "dist/bin/git-hub-pr-list.js",
+    "git-hub-pr-checks": "dist/bin/git-hub-pr-checks.js",
+    "git-hub-run-log": "dist/bin/git-hub-run-log.js",
+    "git-hub-pr-fixup": "dist/bin/git-hub-pr-fixup.js",
     "gitj": "dist/bin/gitj.js",
     "gitj-install-skills": "dist/bin/gitj-install-skills.js"
   },

@@ -1,0 +1,35 @@
+# Line endings
+* text=auto eol=lf
+
+# Python
+*.py    text eol=lf diff=python
+*.pyi   text eol=lf
+
+# Markdown / text
+*.md    text eol=lf
+*.txt   text eol=lf
+*.yaml  text eol=lf
+*.yml   text eol=lf
+*.toml  text eol=lf
+*.json  text eol=lf
+*.sh    text eol=lf
+
+# Binaries — no diff, no merge
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.pdf   binary
+*.zip   binary
+*.tar   binary
+*.gz    binary
+
+# Blender
+*.blend  binary
+*.blend1 binary
+*.fbx    binary
+*.obj    text eol=lf
+*.mtl    text eol=lf
+*.glb    binary
+*.gltf   text eol=lf
